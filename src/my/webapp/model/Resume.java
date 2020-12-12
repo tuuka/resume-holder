@@ -2,7 +2,7 @@ package my.webapp.model;
 
 import java.util.Objects;
 
-public class Resume {
+public class Resume implements Comparable<Resume>{
     public static int count;
     private String uuid;
 
@@ -41,5 +41,11 @@ public class Resume {
     @Override
     public int hashCode() {
         return Objects.hash(uuid);
+    }
+
+    @Override
+    public int compareTo(Resume o) {
+        if (o == null || getClass() != o.getClass()) return 1;
+        return this.getUuid().compareTo(o.getUuid());
     }
 }

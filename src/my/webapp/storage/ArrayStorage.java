@@ -1,58 +1,83 @@
 package my.webapp.storage;
 
+
 import my.webapp.exception.ArrayStorageOverflowException;
+import my.webapp.exception.ArrayStorageResumeExistsException;
+import my.webapp.exception.ArrayStorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
 
-public class ArrayStorage {
-    protected static final int STORAGE_CAPACITY = 20;
+public class ArrayStorage implements Storage {
 
-    private final Resume[] storage = new Resume[STORAGE_CAPACITY];
-    private int size = 0;
+    protected static final int STORAGE_CAPACITY = 10000;
 
+    protected final Resume[] storage = new Resume[STORAGE_CAPACITY];
+    protected int size = 0;
+
+    @Override
+    public int size() {
+        return this.size;
+    }
+
+    @Override
+    public void clear() {
+        Arrays.fill(storage, 0, size, null);
+        size = 0;
+    }
+
+    @Override
     public void save(Resume resume) {
+        if (findIndexOnUuid(resume.getUuid()) >= 0)
+            throw new ArrayStorageResumeExistsException(resume.getUuid());
         if (size < STORAGE_CAPACITY)
             storage[size++] = resume;
         else throw new ArrayStorageOverflowException("Storage capacity exceeded!");
     }
 
+    @Override
+    public void update(Resume resume) {
+        int index = findIndexOnUuid(resume.getUuid());
+        if (index >= 0) storage[index] = resume;
+            else throw new ArrayStorageResumeNotFoundException(resume.getUuid());
+    }
+
     /**
      * @return Resume with provided uuid from storage
      */
+    @Override
     public Resume get(String uuid) {
-        for (Resume r : storage)
-            if (r.getUuid().equals(uuid)) return r;
-        return null;
+        int index = findIndexOnUuid(uuid);
+        if (index >= 0) return storage[index];
+        throw new ArrayStorageResumeNotFoundException("uuid");
     }
 
+    @Override
     public void delete(String uuid) {
-        for (int i = 0; i < size; i++)
-            if (storage[i].getUuid().equals(uuid)) {
-                storage[i] = storage[--size];
-                storage[size + 1] = null;
-                return;
-            }
+        int index = findIndexOnUuid(uuid);
+        if (index >= 0) {
+            storage[index] = storage[--size];
+            storage[size + 1] = null;
+            return;
+        }
+        throw new ArrayStorageResumeNotFoundException("uuid");
     }
 
-    public int size() {
-        return this.size;
-    }
-
-    public void clear() {
-        Arrays.fill(storage, 0, storage.length, null);
-        size = 0;
-    }
-
+    @Override
     public Resume[] getAll() {
-        if (size == 0) return null;
         return Arrays.copyOf(storage, size);
     }
 
+    @Override
     public Resume[] getAllToPosition(int pos) {
-        if (size == 0) return null;
         if (pos > size) return Arrays.copyOf(storage, size);
         return Arrays.copyOf(storage, pos);
+    }
+
+    protected int findIndexOnUuid(String uuid) {
+        for (int i = 0; i < size; i++)
+            if (storage[i].getUuid().equals(uuid)) return i;
+        return -1;
     }
 
     @Override

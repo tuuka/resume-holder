@@ -3,8 +3,6 @@ package my.webapp.model;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 public class ResumeTest {
     public static final Resume R1;
     public static final Resume R2;
