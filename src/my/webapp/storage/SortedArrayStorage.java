@@ -1,8 +1,8 @@
 package my.webapp.storage;
 
-import my.webapp.exception.ArrayStorageResumeNotFoundException;
+import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.exception.ArrayStorageOverflowException;
-import my.webapp.exception.ArrayStorageResumeExistsException;
+import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -12,8 +12,8 @@ public class SortedArrayStorage extends ArrayStorage {
     @Override
     public void save(Resume resume) {
         int index = Arrays.binarySearch(Arrays.copyOf(storage, size), resume);
+        if (index > -1) throw new StorageResumeExistsException(resume.getUuid());
         if (size == STORAGE_CAPACITY) throw new ArrayStorageOverflowException();
-        if (index > -1) throw new ArrayStorageResumeExistsException(resume.getUuid());
         else {
             index = -index - 1;
             System.arraycopy(storage, index, storage, index + 1, storage.length - index - 1);
@@ -25,14 +25,14 @@ public class SortedArrayStorage extends ArrayStorage {
     @Override
     public Resume get(String uuid) {
         int index = findIndexOnUuid(uuid);
-        if (index < 0) throw new ArrayStorageResumeNotFoundException(uuid);
+        if (index < 0) throw new StorageResumeNotFoundException(uuid);
         return storage[index];
     }
 
     @Override
     public void delete(String uuid) {
         int index = findIndexOnUuid(uuid);
-        if (index < 0) throw new ArrayStorageResumeNotFoundException(uuid);
+        if (index < 0) throw new StorageResumeNotFoundException(uuid);
         System.arraycopy(storage, index + 1, storage, index, storage.length - index - 1);
         storage[size--] = null;
     }

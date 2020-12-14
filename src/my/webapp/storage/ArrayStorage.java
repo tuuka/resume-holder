@@ -2,8 +2,8 @@ package my.webapp.storage;
 
 
 import my.webapp.exception.ArrayStorageOverflowException;
-import my.webapp.exception.ArrayStorageResumeExistsException;
-import my.webapp.exception.ArrayStorageResumeNotFoundException;
+import my.webapp.exception.StorageResumeExistsException;
+import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class ArrayStorage implements Storage {
     @Override
     public void save(Resume resume) {
         if (findIndexOnUuid(resume.getUuid()) >= 0)
-            throw new ArrayStorageResumeExistsException(resume.getUuid());
+            throw new StorageResumeExistsException(resume.getUuid());
         if (size < STORAGE_CAPACITY)
             storage[size++] = resume;
         else throw new ArrayStorageOverflowException("Storage capacity exceeded!");
@@ -39,7 +39,7 @@ public class ArrayStorage implements Storage {
     public void update(Resume resume) {
         int index = findIndexOnUuid(resume.getUuid());
         if (index >= 0) storage[index] = resume;
-            else throw new ArrayStorageResumeNotFoundException(resume.getUuid());
+            else throw new StorageResumeNotFoundException(resume.getUuid());
     }
 
     /**
@@ -49,7 +49,7 @@ public class ArrayStorage implements Storage {
     public Resume get(String uuid) {
         int index = findIndexOnUuid(uuid);
         if (index >= 0) return storage[index];
-        throw new ArrayStorageResumeNotFoundException("uuid");
+        throw new StorageResumeNotFoundException("uuid");
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ArrayStorage implements Storage {
             storage[size + 1] = null;
             return;
         }
-        throw new ArrayStorageResumeNotFoundException("uuid");
+        throw new StorageResumeNotFoundException("uuid");
     }
 
     @Override
