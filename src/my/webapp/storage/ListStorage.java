@@ -1,74 +1,64 @@
 package my.webapp.storage;
 
-import my.webapp.exception.StorageResumeExistsException;
-import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ListStorage implements Storage{
+public class ListStorage extends AbstractStorage<Integer>{
     private final List<Resume> storage;
-
 
     public ListStorage() {
         storage = new ArrayList<>();
     }
 
+
     @Override
-    public void save(Resume resume) {
-        if (!storage.contains(resume)) storage.add(resume);
-            else throw new StorageResumeExistsException(resume.getUuid());
+    protected void doSave(Resume r, Integer key) {
+        storage.add(r);
     }
 
-    private int getIndexOnUuid(String uuid){
+    @Override
+    protected void doUpdate(Resume r, Integer key) {
+        storage.set(key, r);
+    }
+
+    @Override
+    protected Resume doGet(Integer key) {
+        return storage.get(key);
+    }
+
+    @Override
+    protected void doDelete(Integer key) {
+        storage.remove(key.intValue());
+    }
+
+    @Override
+    protected int doSize() {
+        return storage.size();
+    }
+
+    @Override
+    protected void doClear() {
+        storage.clear();
+    }
+
+    @Override
+    protected Integer getSearchKey(String uuid) {
         for ( int i = 0; i < storage.size(); i++ )
             if (storage.get(i).getUuid().equals(uuid)) return i;
         return -1;
     }
 
     @Override
-    public void update(Resume resume) {
-        /* indexOf использует equals для элементов, что (в будущем верятно)
-           не будет работать, если элементы будут включать много разных полей
-           потому ищем индекс по uuid*/
-        int index = getIndexOnUuid(resume.getUuid());
-        if (index >= 0) storage.set(index, resume);
-            else throw new StorageResumeNotFoundException(resume.getUuid());
+    protected boolean isExist(String uuid) {
+        return getSearchKey(uuid) >= 0;
     }
 
     @Override
-    public Resume get(String uuid) {
-        int index = getIndexOnUuid(uuid);
-        if (index == -1) throw new StorageResumeNotFoundException(uuid);
-        return storage.get(index);
-    }
-
-    @Override
-    public void delete(String uuid) {
-        if (!storage.removeIf(r->r.getUuid().equals(uuid)))
-            throw new StorageResumeNotFoundException(uuid);
-    }
-
-    @Override
-    public int size() {
-        return storage.size();
-    }
-
-    @Override
-    public void clear() {
-        storage.clear();
-    }
-
-    @Override
-    public Resume[] getAll() {
+    protected Resume[] doGetAll() {
         return storage.toArray(new Resume[0]);
-    }
-
-    @Override
-    public Resume[] getAllToPosition(int pos) {
-        return storage.subList(0, pos).toArray(new Resume[0]);
     }
 
     @Override

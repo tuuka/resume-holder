@@ -1,14 +1,12 @@
 package my.webapp.storage;
 
-import my.webapp.exception.StorageResumeExistsException;
-import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapStorage implements Storage{
+public class MapStorage extends AbstractStorage<String>{
     private final Map<String, Resume> storage;
 
     public MapStorage() {
@@ -16,50 +14,48 @@ public class MapStorage implements Storage{
     }
 
     @Override
-    public void save(Resume resume) {
-        if (!storage.containsKey(resume.getUuid()))
-            storage.put(resume.getUuid(), resume);
-        else throw new StorageResumeExistsException(resume.getUuid());
+    protected void doSave(Resume r, String uuid) {
+        storage.put(uuid, r);
     }
 
     @Override
-    public void update(Resume resume) {
-        if (storage.containsKey(resume.getUuid()))
-            storage.put(resume.getUuid(), resume);
-        else throw new StorageResumeNotFoundException(resume.getUuid());
+    protected void doUpdate(Resume r, String uuid) {
+        storage.put(uuid, r);
     }
 
     @Override
-    public Resume get(String uuid) {
-        Resume r = storage.get(uuid);
-        if (r != null) return r;
-        throw new StorageResumeNotFoundException(uuid);
+    protected Resume doGet(String uuid) {
+        return storage.get(uuid);
     }
 
     @Override
-    public void delete(String uuid) {
-        Resume r = storage.remove(uuid);
-        if (r == null) throw new StorageResumeNotFoundException(uuid);
+    protected void doDelete(String uuid) {
+        storage.remove(uuid);
     }
 
     @Override
-    public int size() {
+    protected int doSize() {
         return storage.size();
     }
 
     @Override
-    public void clear() {
+    protected void doClear() {
         storage.clear();
     }
 
     @Override
-    public Resume[] getAll() {
-        return storage.values().toArray(new Resume[0]);
+    protected String getSearchKey(String uuid) {
+        return uuid;
     }
 
     @Override
-    public Resume[] getAllToPosition(int pos) {
-        return Arrays.copyOfRange(getAll(), 0, pos);
+    protected boolean isExist(String uuid) {
+        return storage.containsKey(uuid);
+    }
+
+    @Override
+    protected Resume[] doGetAll() {
+        return storage.values().toArray(new Resume[0]);
     }
 
     @Override

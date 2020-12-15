@@ -5,9 +5,13 @@ import my.webapp.model.Resume;
 import my.webapp.storage.SortedArrayStorage;
 import my.webapp.storage.Storage;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 public class MainArray {
     public static void main(String[] args) {
@@ -37,6 +41,13 @@ public class MainArray {
 
         list.removeIf(resume -> Objects.equals(resume.getUuid(), "1"));
         System.out.println(list);
+
+        try {
+            Field f = Resume.class.getDeclaredField("uuid");
+            System.out.println(f.getType());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
 
     }
 }

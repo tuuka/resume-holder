@@ -1,49 +1,59 @@
 package my.webapp.storage;
 
-import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.exception.ArrayStorageOverflowException;
-import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class SortedArrayStorage extends ArrayStorage {
 
     @Override
-    public void save(Resume resume) {
-        int index = Arrays.binarySearch(Arrays.copyOf(storage, size), resume);
-        if (index > -1) throw new StorageResumeExistsException(resume.getUuid());
-        if (size == STORAGE_CAPACITY) throw new ArrayStorageOverflowException();
-        else {
-            index = -index - 1;
-            System.arraycopy(storage, index, storage, index + 1, storage.length - index - 1);
-            storage[index] = resume;
+    protected void doSave(Resume resume, Integer key) {
+        if (size < STORAGE_CAPACITY) {
+            key = -key - 1;
+            System.arraycopy(storage, key, storage, key + 1, storage.length - key - 1);
+            storage[key] = resume;
             size++;
-        }
+        } else throw new ArrayStorageOverflowException();
     }
 
     @Override
-    public Resume get(String uuid) {
-        int index = findIndexOnUuid(uuid);
-        if (index < 0) throw new StorageResumeNotFoundException(uuid);
-        return storage[index];
+    protected void doDelete(Integer key) {
+        System.arraycopy(storage, key + 1, storage, key, storage.length - key - 1);
+        storage[--size] = null;
     }
 
-    @Override
-    public void delete(String uuid) {
-        int index = findIndexOnUuid(uuid);
-        if (index < 0) throw new StorageResumeNotFoundException(uuid);
-        System.arraycopy(storage, index + 1, storage, index, storage.length - index - 1);
-        storage[size--] = null;
-    }
+
+//
+//    @Override
+//    public Resume get(String uuid) {
+//        int index = findIndexOnUuid(uuid);
+//        if (index < 0) throw new StorageResumeNotFoundException(uuid);
+//        return storage[index];
+//    }
+
+//    @Override
+//    public void delete(String uuid) {
+//        int index = findIndexOnUuid(uuid);
+//        if (index < 0) throw new StorageResumeNotFoundException(uuid);
+//        System.arraycopy(storage, index + 1, storage, index, storage.length - index - 1);
+//        storage[size--] = null;
+//    }
+
+//    @Override
+//    protected int findIndexOnUuid(String uuid) {
+//        return Arrays.binarySearch(storage, 0, size, new Resume(uuid));
+////        return Arrays.binarySearch(Arrays
+////                .stream(Arrays.copyOf(storage, size))
+////                .map(Resume::getUuid)
+////                .toArray(), uuid);
+//    }
 
     @Override
-    protected int findIndexOnUuid(String uuid) {
-        return Arrays.binarySearch(storage, 0, size, new Resume(uuid));
-//        return Arrays.binarySearch(Arrays
-//                .stream(Arrays.copyOf(storage, size))
-//                .map(Resume::getUuid)
-//                .toArray(), uuid);
+    protected Integer getSearchKey(String uuid) {
+        return Arrays.binarySearch(storage, 0,
+                size, new Resume(uuid), Comparator.comparing(Resume::getUuid));
     }
 
     @Override
