@@ -22,18 +22,25 @@ public class ListStorage implements Storage{
             else throw new StorageResumeExistsException(resume.getUuid());
     }
 
+    private int getIndexOnUuid(String uuid){
+        for ( int i = 0; i < storage.size(); i++ )
+            if (storage.get(i).getUuid().equals(uuid)) return i;
+        return -1;
+    }
+
     @Override
     public void update(Resume resume) {
-        int index = storage.indexOf(resume);
+        /* indexOf использует equals для элементов, что (в будущем верятно)
+           не будет работать, если элементы будут включать много разных полей
+           потому ищем индекс по uuid*/
+        int index = getIndexOnUuid(resume.getUuid());
         if (index >= 0) storage.set(index, resume);
             else throw new StorageResumeNotFoundException(resume.getUuid());
     }
 
     @Override
     public Resume get(String uuid) {
-        int index = -1;
-        for ( int i = 0; i < storage.size(); i++ )
-            if (storage.get(i).getUuid().equals(uuid)) {index = i; break;}
+        int index = getIndexOnUuid(uuid);
         if (index == -1) throw new StorageResumeNotFoundException(uuid);
         return storage.get(index);
     }
