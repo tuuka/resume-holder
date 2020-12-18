@@ -26,9 +26,6 @@ public class ArrayStorage extends AbstractStorage<Integer> {
     @Override
     protected void doUpdate(Resume r, Integer key) {
         storage[key] = r;
-//        int index = findIndexOnUuid(resume.getUuid());
-//        if (index >= 0) storage[index] = resume;
-//        else throw new StorageResumeNotFoundException(resume.getUuid());
     }
 
     @Override
@@ -61,48 +58,14 @@ public class ArrayStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    protected boolean isExist(String uuid) {
-        return getSearchKey(uuid) >= 0;
+    protected boolean isExist(Integer index) {
+        return index >= 0;
     }
 
     @Override
     protected Resume[] doGetAll() {
         return Arrays.copyOf(storage, size);
     }
-
-//
-//    /**
-//     * @return Resume with provided uuid from storage
-//     */
-//    @Override
-//    public Resume get(String uuid) {
-//        int index = findIndexOnUuid(uuid);
-//        if (index >= 0) return storage[index];
-//        throw new StorageResumeNotFoundException("uuid");
-//    }
-
-//    @Override
-//    public void delete(String uuid) {
-//        int index = findIndexOnUuid(uuid);
-//        if (index >= 0) {
-//            storage[index] = storage[--size];
-//            storage[size + 1] = null;
-//            return;
-//        }
-//        throw new StorageResumeNotFoundException("uuid");
-//    }
-
-//    @Override
-//    public Resume[] getAll() {
-//        return Arrays.copyOf(storage, size);
-//    }
-//
-//    @Override
-//    public Resume[] getAllToPosition(int pos) {
-//        if (pos > size) return Arrays.copyOf(storage, size);
-//        return Arrays.copyOf(storage, pos);
-//    }
-
 
     @Override
     public String toString() {

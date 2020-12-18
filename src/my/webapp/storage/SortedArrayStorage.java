@@ -24,32 +24,6 @@ public class SortedArrayStorage extends ArrayStorage {
         storage[--size] = null;
     }
 
-
-//
-//    @Override
-//    public Resume get(String uuid) {
-//        int index = findIndexOnUuid(uuid);
-//        if (index < 0) throw new StorageResumeNotFoundException(uuid);
-//        return storage[index];
-//    }
-
-//    @Override
-//    public void delete(String uuid) {
-//        int index = findIndexOnUuid(uuid);
-//        if (index < 0) throw new StorageResumeNotFoundException(uuid);
-//        System.arraycopy(storage, index + 1, storage, index, storage.length - index - 1);
-//        storage[size--] = null;
-//    }
-
-//    @Override
-//    protected int findIndexOnUuid(String uuid) {
-//        return Arrays.binarySearch(storage, 0, size, new Resume(uuid));
-////        return Arrays.binarySearch(Arrays
-////                .stream(Arrays.copyOf(storage, size))
-////                .map(Resume::getUuid)
-////                .toArray(), uuid);
-//    }
-
     @Override
     protected Integer getSearchKey(String uuid) {
         return Arrays.binarySearch(storage, 0,

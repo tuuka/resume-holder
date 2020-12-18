@@ -52,8 +52,8 @@ public class ListStorage extends AbstractStorage<Integer>{
     }
 
     @Override
-    protected boolean isExist(String uuid) {
-        return getSearchKey(uuid) >= 0;
+    protected boolean isExist(Integer index) {
+        return index >= 0;
     }
 
     @Override
