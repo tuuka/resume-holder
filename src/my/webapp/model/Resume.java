@@ -8,8 +8,8 @@ public class Resume implements Comparable<Resume>{
     private String uuid;
     private String fullName;
 
-    private final Map<ContactType, String> contacts = new HashMap<>();
-    private final Map<SectionType, Section> sections = new HashMap<>();
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public static final Resume EMPTY = new Resume();
 
@@ -52,12 +52,12 @@ public class Resume implements Comparable<Resume>{
         this.fullName = fullName;
     }
 
-    public Map<ContactType, String> getContacts() {
-        return contacts;
+    public String getContact(ContactType type){
+        return contacts.get(type);
     }
 
-    public Map<SectionType, Section> getSections() {
-        return sections;
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
     public void setContact(ContactType type, String value){
@@ -68,13 +68,7 @@ public class Resume implements Comparable<Resume>{
         sections.put(type, section);
     }
 
-    public String getContact(ContactType type){
-        return contacts.get(type);
-    }
 
-    public Section getSection(SectionType type){
-        return sections.get(type);
-    }
 
     @Override
     public String toString() {

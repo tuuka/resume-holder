@@ -1,8 +1,7 @@
 package my.webapp;
 
 
-import my.webapp.model.ContactType;
-import my.webapp.model.Resume;
+import my.webapp.model.*;
 
 import java.util.UUID;
 
@@ -46,41 +45,36 @@ public class MainArray {
         R1.setContact(ContactType.MOBILE, "+321654987");
         R1.setContact(ContactType.HOME_PHONE, "+321654987");
         R1.setContact(ContactType.PHONE, "+852369741");
-//        System.out.println(ContactType.PHONE.returnContact(R1.getContact(ContactType.PHONE)));
-//        System.out.println(ContactType.MOBILE.returnContact(R1.getContact(ContactType.MOBILE)));
-//        try {
-//            System.out.println(Organization.dateFormat.parse("16/12/2020"));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
+        System.out.println(ContactType.PHONE.returnContact(R1.getContact(ContactType.PHONE)));
+        System.out.println(ContactType.MOBILE.returnContact(R1.getContact(ContactType.MOBILE)));
 
-//        R1.setSection(SectionType.EXPERIENCE,
-//            new OrganizationSection(
-//                new Organization("MKS",
-//                    new Organization.Position("Сборщик",
-//                            "10/09/2000",
-//                            "03/07/2001"),
-//                    new Organization.Position("Наладчик",
-//                            "04/07/2001",
-//                            "25/01/2002"),
-//                    new Organization.Position("Инженер ТАЛ",
-//                            "26/01/2002",
-//                            "15/10/2002")
-//                ),
-//                new Organization("ФОП",
-//                    new Organization.Position("Разгильдяй",
-//                            "15/10/2002",
-//                            "15/10/2003")
-//                )
-//            )
-//        );
-//        R1.setSection(SectionType.QUALIFICATIONS,
-//            new ListSection(
-//                "Могу копать.",
-//                "Могу не копать.",
-//                "Могу спать и есть."
-//        ));
-//        System.out.println(R1);
+        R1.setSection(SectionType.EXPERIENCE,
+            new OrganizationSection(
+                new Organization("MKS", null,
+                    new Organization.Position("Сборщик",
+                            "10/09/2000",
+                            "03/07/2001"),
+                    new Organization.Position("Наладчик",
+                            "04/07/2001",
+                            "25/01/2002"),
+                    new Organization.Position("Инженер ТАЛ",
+                            "26/01/2002",
+                            "15/10/2002")
+                ),
+                new Organization("ФОП", null,
+                    new Organization.Position("Разгильдяй",
+                            "15/10/2002",
+                            "15/10/2003")
+                )
+            )
+        );
+        R1.setSection(SectionType.QUALIFICATIONS,
+            new ListSection(
+                "Могу копать.",
+                "Могу не копать.",
+                "Могу спать и есть."
+        ));
+        System.out.println(((OrganizationSection)R1.getSection(SectionType.EXPERIENCE)).getOrganizations());
 
 
 

@@ -6,19 +6,19 @@ import java.util.Objects;
 
 public class OrganizationSection extends Section {
     private static final long serialVersionUID = 1L;
-    private final List<Organization> items;
+    private final List<Organization> organizations;
 
-    public OrganizationSection(List<Organization> items) {
-        Objects.requireNonNull(items, "organizations must not be null");
-        this.items = items;
+    public OrganizationSection(Organization... organizations) {
+        this(Arrays.asList(organizations));
     }
 
-    public OrganizationSection(Organization... items) {
-        this(Arrays.asList(items));
+    public OrganizationSection(List<Organization> organizations) {
+        Objects.requireNonNull(organizations, "organizations must not be null");
+        this.organizations = organizations;
     }
 
     public List<Organization> getOrganizations() {
-        return this.items;
+        return this.organizations;
     }
 
     @Override
@@ -26,17 +26,17 @@ public class OrganizationSection extends Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OrganizationSection that = (OrganizationSection) o;
-        return items.equals(that.items);
+        return organizations.equals(that.organizations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(items);
+        return Objects.hash(organizations);
     }
 
     @Override
     public String toString() {
-        return items.stream()
+        return organizations.stream()
                 .collect(StringBuilder::new,
                         StringBuilder::append,
                         StringBuilder::append).toString();

@@ -2,6 +2,6 @@ package my.webapp.model;
 
 import java.io.Serializable;
 
-public class Section implements Serializable {
+public abstract class Section implements Serializable {
 
 }

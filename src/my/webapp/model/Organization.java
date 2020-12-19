@@ -1,66 +1,43 @@
 package my.webapp.model;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    public static SimpleDateFormat dateFormat =
-            new SimpleDateFormat("dd/MM/yyyy");
-
-    public static Date convertStringToDate(String s){
-        try {
-            return dateFormat.parse(s);
-        } catch (ParseException e) {
-            System.out.printf("Date string must be in %s format!!\n",
-                    dateFormat);
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String convertDateToString(Date d){
-        return dateFormat.format(d);
-    }
-
+    private Link homePage;
 
     public static Organization EMPTY = new Organization();
-    private String organizationName;
-    private final Map<ContactType, String> contacts = new HashMap<>();
-    private final List<Position> positions = new ArrayList<>();
+    //    private final Map<ContactType, String> contacts = new HashMap<>();
+    private List<Position> positions = new ArrayList<>();
 
-    private Organization(){ }
+    public static DateTimeFormatter dateFormatter =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public Organization(String organizationName){
-        this.organizationName = organizationName;
+    public static LocalDate convertStringToDate(String s) {
+        return LocalDate.parse(s, dateFormatter);
     }
 
-    public Organization(String organizationName, Position... positions){
-        this.organizationName = organizationName;
-        this.positions.addAll(Arrays.asList(positions));
+    public static String convertDateToString(LocalDate d) {
+        return d.format(dateFormatter);
     }
 
-    public String getOrganizationName() {
-        return organizationName;
+    private Organization() {
     }
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+    public Organization(String name, String url, Position... positions) {
+        this(new Link(name, url), Arrays.asList(positions));
     }
 
-    public Map<ContactType, String> getContacts() {
-        return contacts;
+    public Organization(Link homePage, List<Position> positions) {
+        this.homePage = homePage;
+        this.positions = positions;
     }
 
-    public void setContact(ContactType contactType, String contact) {
-        this.contacts.put(contactType, contact);
-    }
-
-    public String getContact(ContactType contactType) {
-        return this.contacts.get(contactType);
+    public Link getHomePage() {
+        return homePage;
     }
 
     public List<Position> getPositions() {
@@ -76,59 +53,45 @@ public class Organization implements Serializable {
         if (!positions.contains(p)) positions.add(p);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Organization)) return false;
-        Organization that = (Organization) o;
-        return getOrganizationName().equals(that.getOrganizationName()) &&
-                getContacts().equals(that.getContacts()) &&
-                getPositions().equals(that.getPositions());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getOrganizationName(), getContacts(), getPositions());
-    }
 
     @Override
     public String toString() {
         return String.format("\n\t\t\t'%s'" +
                         "\n\t\t\t\tcontacts:%s\n\t\t\t\tpositions:%s",
-                organizationName,
-                contacts.keySet().stream()
-                        .collect(StringBuilder::new,
-                            (sb,item)-> sb.append("\n\t\t\t\t\t")
-                                .append(item.returnContact(contacts.get(item))),
-                            StringBuilder::append).toString(),
+                homePage.getName(), homePage.getUrl(),
+//                contacts.keySet().stream()
+//                        .collect(StringBuilder::new,
+//                            (sb,item)-> sb.append("\n\t\t\t\t\t")
+//                                .append(item.returnContact(contacts.get(item))),
+//                            StringBuilder::append).toString(),
                 positions.stream()
                         .collect(StringBuilder::new,
-                            (sb,item)-> sb.append("\n\t\t\t\t\t")
-                                    .append(String.format("%-15s с %s по %s",
-                                            item.getNameOfPosition(),
-                                            item.getStartDateString(),
-                                            item.getFinishDateString())),
-                            StringBuilder::append).toString()
-
+                                (sb, item) -> sb.append("\n\t\t\t\t\t")
+                                        .append(String.format("%-15s с %s по %s",
+                                                item.getNameOfPosition(),
+                                                item.getStartDateString(),
+                                                item.getFinishDateString())),
+                                StringBuilder::append).toString()
         );
     }
 
-    public static class Position{
+    public static class Position {
         private String nameOfPosition;
-        private Date startDate, finishDate;
+        private LocalDate startDate, finishDate;
 
-        public Position(String nameOfPosition){
+        public Position(String nameOfPosition) {
             this.nameOfPosition = nameOfPosition;
         }
 
         public Position(String nameOfPosition,
                         String startDate,
-                        String finishDate){
+                        String finishDate) {
             this.nameOfPosition = nameOfPosition;
-            this.startDate = startDate == null? null:
+            this.startDate = startDate == null ? null :
                     convertStringToDate(startDate);
-            this.finishDate = finishDate == null? null:
-                    convertStringToDate(finishDate);        }
+            this.finishDate = finishDate == null ? null :
+                    convertStringToDate(finishDate);
+        }
 
         public String getNameOfPosition() {
             return nameOfPosition;
@@ -138,28 +101,28 @@ public class Organization implements Serializable {
             this.nameOfPosition = nameOfPosition;
         }
 
-        public void setStartDate(Date startDate) {
+        public void setStartDate(LocalDate startDate) {
             this.startDate = startDate;
         }
 
         public void setStartDateFromString(String startDate) {
-                this.startDate = convertStringToDate(startDate);
+            this.startDate = convertStringToDate(startDate);
         }
 
         public String getStartDateString() {
             return convertDateToString(startDate);
         }
 
-        public void setFinishDate(Date finishDate) {
+        public String getFinishDateString() {
+            return convertDateToString(finishDate);
+        }
+
+        public void setFinishDate(LocalDate finishDate) {
             this.finishDate = finishDate;
         }
 
         public void setFinishDateFromString(String finishDate) {
-                this.finishDate = convertStringToDate(finishDate);
-        }
-
-        public String getFinishDateString() {
-            return convertDateToString(finishDate);
+            this.finishDate = convertStringToDate(finishDate);
         }
 
         @Override
@@ -186,11 +149,4 @@ public class Organization implements Serializable {
                     '}';
         }
     }
-
-
-
-
-
-
-
 }
