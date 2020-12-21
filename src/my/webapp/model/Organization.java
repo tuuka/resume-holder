@@ -1,8 +1,9 @@
 package my.webapp.model;
 
+import my.webapp.util.DateUtil;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Organization implements Serializable {
@@ -12,17 +13,6 @@ public class Organization implements Serializable {
     public static Organization EMPTY = new Organization();
     //    private final Map<ContactType, String> contacts = new HashMap<>();
     private List<Position> positions = new ArrayList<>();
-
-    public static DateTimeFormatter dateFormatter =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    public static LocalDate convertStringToDate(String s) {
-        return LocalDate.parse(s, dateFormatter);
-    }
-
-    public static String convertDateToString(LocalDate d) {
-        return d.format(dateFormatter);
-    }
 
     private Organization() {
     }
@@ -44,15 +34,23 @@ public class Organization implements Serializable {
         return positions;
     }
 
-    public void addPosition(Position position) {
-        if (!positions.contains(position)) positions.add(position);
-    }
-
-    public void addPosition(String name, String startDate, String finishDate) {
-        Position p = new Position(name, startDate, finishDate);
+    /**
+     * Create Position object with {@code title}, {@code description},
+     * {@code startDate} and {@code endDate} (String in format of
+     * {@code MM/yyyy}).
+     *
+     * @param startDate   start date of Position
+     * @param endDate  finish date of Position
+     * @param title       position title
+     * @param description position description
+     * @throws NullPointerException if {@code startDate} or {@code endDate}
+     *                              {@code title} is {@code null}
+     */
+    public void addPosition(String startDate, String endDate,
+                            String title, String description) {
+        Position p = new Position(startDate, endDate, title, description);
         if (!positions.contains(p)) positions.add(p);
     }
-
 
     @Override
     public String toString() {
@@ -67,86 +65,92 @@ public class Organization implements Serializable {
                 positions.stream()
                         .collect(StringBuilder::new,
                                 (sb, item) -> sb.append("\n\t\t\t\t\t")
-                                        .append(String.format("%-15s с %s по %s",
-                                                item.getNameOfPosition(),
-                                                item.getStartDateString(),
-                                                item.getFinishDateString())),
+                                .append(item),
                                 StringBuilder::append).toString()
         );
     }
 
     public static class Position {
-        private String nameOfPosition;
-        private LocalDate startDate, finishDate;
+        private String title, description;
+        private LocalDate startDate, endDate;
 
-        public Position(String nameOfPosition) {
-            this.nameOfPosition = nameOfPosition;
+        public Position() {
         }
 
-        public Position(String nameOfPosition,
-                        String startDate,
-                        String finishDate) {
-            this.nameOfPosition = nameOfPosition;
-            this.startDate = startDate == null ? null :
-                    convertStringToDate(startDate);
-            this.finishDate = finishDate == null ? null :
-                    convertStringToDate(finishDate);
+        /**
+         * Create Position object with {@code title}, {@code description} and
+         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
+         * setting automatically
+         *
+         * @param startDate   start date of Position
+         * @param title       position title
+         * @param description position description
+         * @throws NullPointerException if {@code startDate} or
+         *                              {@code title} is {@code null}
+         */
+
+        public Position(String startDate,
+                        String title, String description) {
+            this(DateUtil.parse(startDate), null, title, description);
         }
 
-        public String getNameOfPosition() {
-            return nameOfPosition;
+        /**
+         * Create Position object with {@code title}, {@code description},
+         * {@code startDate} and {@code endDate} (String in format of
+         * {@code MM/yyyy}).
+         *
+         * @param startDate   start date of Position
+         * @param endDate  finish date of Position
+         * @param title       position title
+         * @param description position description
+         * @throws NullPointerException if {@code startDate} or {@code endDate}
+         *                              {@code title} is {@code null}
+         */
+
+        public Position(String startDate, String endDate,
+                        String title, String description) {
+            this(DateUtil.parse(startDate), DateUtil.parse(endDate), title, description);
         }
 
-        public void setNameOfPosition(String nameOfPosition) {
-            this.nameOfPosition = nameOfPosition;
-        }
-
-        public void setStartDate(LocalDate startDate) {
+        public Position(LocalDate startDate, LocalDate endDate,
+                        String title, String description) {
+            Objects.requireNonNull(startDate, "Start Date must not be null!");
+            Objects.requireNonNull(endDate, "Finish Date must not be null!");
+            Objects.requireNonNull(title, "Position title must not be null!");
+            this.title = title;
             this.startDate = startDate;
+            this.endDate = endDate;
+            this.description = description == null ? "" : description;
         }
 
-        public void setStartDateFromString(String startDate) {
-            this.startDate = convertStringToDate(startDate);
-        }
 
-        public String getStartDateString() {
-            return convertDateToString(startDate);
-        }
+        public String getTitle() { return title; }
 
-        public String getFinishDateString() {
-            return convertDateToString(finishDate);
-        }
+        public String getDescription() { return description; }
 
-        public void setFinishDate(LocalDate finishDate) {
-            this.finishDate = finishDate;
-        }
+        public LocalDate getStartDate() { return startDate; }
 
-        public void setFinishDateFromString(String finishDate) {
-            this.finishDate = convertStringToDate(finishDate);
-        }
+        public LocalDate getEndDate() { return endDate; }
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof Position)) return false;
             Position position = (Position) o;
-            return getNameOfPosition().equals(position.getNameOfPosition()) &&
+            return title.equals(position.title) &&
+                    Objects.equals(description, position.description) &&
                     startDate.equals(position.startDate) &&
-                    finishDate.equals(position.finishDate);
+                    endDate.equals(position.endDate);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(getNameOfPosition(), startDate, finishDate);
+            return Objects.hash(title, description, startDate, endDate);
         }
 
         @Override
         public String toString() {
-            return "Position{" +
-                    "name='" + nameOfPosition + '\'' +
-                    ", startDate=" + getStartDateString() +
-                    ", finishDate=" + getFinishDateString() +
-                    '}';
+            return String.format("С %s по %s %15s (%s)", startDate, endDate, title, description);
         }
     }
 }
