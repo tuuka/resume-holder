@@ -29,7 +29,7 @@ public abstract class AbstractStorageTest {
     @Test
     public void save() {
         for (int i = 4; i < CAPACITY; i++)
-            storage.save(new Resume(String.valueOf(i)));
+            storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
         storage.save(R1);
         storage.save(R2);
         assertEquals(storage.size(), CAPACITY - 2);
@@ -44,7 +44,7 @@ public abstract class AbstractStorageTest {
         if (storage instanceof ArrayStorage) {
             storage.clear();
             for (int i = 0; i < CAPACITY; i++)
-                storage.save(new Resume(String.valueOf(i)));
+                storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
             assertThrows(ArrayStorageOverflowException.class,
                     () -> storage.save(new Resume("overflow")));
         }
@@ -75,7 +75,7 @@ public abstract class AbstractStorageTest {
     public void delete() {
         storage.clear();
         for (int i = CAPACITY; i > 0; i--)
-            storage.save(new Resume(String.valueOf(i)));
+            storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
         assertEquals(CAPACITY, storage.size());
         for (int i = CAPACITY; i > 0; i--) {
             storage.delete(String.valueOf(i));

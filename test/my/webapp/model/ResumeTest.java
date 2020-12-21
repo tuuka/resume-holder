@@ -20,18 +20,18 @@ public class ResumeTest {
         R2Uuid = "2.000";
         R3Uuid = "3.000";
 
-        R1 = new Resume(R1Uuid);
-        R2 = new Resume(R2Uuid);
-        R3 = new Resume(R3Uuid);
-        R4 = new Resume();
+        R1 = new Resume(R1Uuid, R1Uuid);
+        R2 = new Resume(R2Uuid, R2Uuid);
+        R3 = new Resume(R3Uuid, R3Uuid);
+        R4 = new Resume("1", "1");
     }
 
     @Test
     public void getUuid() {
-        Assert.assertEquals(R1.getUuid(), R1Uuid);
-        Assert.assertEquals(R2.getUuid(), R2Uuid);
-        Assert.assertEquals(R3.getUuid(), R3Uuid);
-        Assert.assertEquals(R4.getUuid(), "4.000");
+        Assert.assertEquals(R1Uuid, R1.getUuid());
+        Assert.assertEquals(R2Uuid, R2.getUuid());
+        Assert.assertEquals(R3Uuid, R3.getUuid());
+        Assert.assertEquals("1", R4.getUuid());
 
     }
 

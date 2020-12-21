@@ -27,7 +27,7 @@ public class SortedArrayStorage extends ArrayStorage {
     @Override
     protected Integer getSearchKey(String uuid) {
         return Arrays.binarySearch(storage, 0,
-                size, new Resume(uuid), Comparator.comparing(Resume::getUuid));
+                size, new Resume(uuid, "dummy"), Comparator.comparing(Resume::getUuid));
     }
 
     @Override

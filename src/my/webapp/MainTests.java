@@ -1,6 +1,7 @@
 package my.webapp;
 
 
+import java.io.*;
 import java.util.UUID;
 
 public class MainTests {
@@ -30,7 +31,18 @@ public class MainTests {
 //            e.printStackTrace();
 //        }
 
+        File file = new File(".\\.gitignore");
+        try (BufferedReader br = new BufferedReader(new FileReader(file))){
+            System.out.println(file.getAbsolutePath());
+            String s;
+            while ((s = br.readLine()) != null){
+                System.out.println(s);
+            }
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(file.getAbsolutePath());
     }
 
 }
