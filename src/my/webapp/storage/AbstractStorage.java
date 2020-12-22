@@ -11,12 +11,12 @@ import java.util.logging.*;
 
 /* Абстрактный класс для всех хранилищ. K - ключ, используемый для поиска
 * Имплементирует все методы интерфейса Storage, используя дополнительные
-* абстрактные методы, реализация которых будет осуществлена в
+* абстрактные методы, реализация которых осуществлена в
 * дочерних классах. */
 
 public abstract class AbstractStorage<K> implements Storage{
 
-    private static Logger LOGGER;
+    private static final Logger LOGGER;
 
 //    static {
 //        //https://www.logicbig.com/tutorials/core-java-tutorial/logging/customizing-default-format.html
@@ -39,11 +39,13 @@ public abstract class AbstractStorage<K> implements Storage{
             }
         };
 
+        // Switching off parents' log levels and adding custom messages format
         Logger mainLogger = Logger.getLogger(AbstractStorage.class.getPackageName());
         mainLogger.setUseParentHandlers(false);
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(sf);
 
+        // Adding log to file
 //        FileHandler fileHandler;
 //        try {
 //            fileHandler = new FileHandler("D:\\temp\\storage.log", true);
@@ -76,7 +78,6 @@ public abstract class AbstractStorage<K> implements Storage{
 
     protected abstract Resume[] doGetAll();
 
-    /* Если ключ не uuid (для Map) */
     private K getExistedSearchKey(String uuid) {
         K key = getSearchKey(uuid);
         if (!isExist(key)) {

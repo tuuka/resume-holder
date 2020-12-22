@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapStorage extends AbstractStorage<String>{
+public class MapUuidStorage extends AbstractStorage<String>{
     private final Map<String, Resume> storage;
 
-    public MapStorage() {
+    public MapUuidStorage() {
         storage = new HashMap<>();
     }
 

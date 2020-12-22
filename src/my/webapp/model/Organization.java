@@ -70,28 +70,11 @@ public class Organization implements Serializable {
         );
     }
 
-    public static class Position {
+    public static class Position implements Serializable{
         private String title, description;
         private LocalDate startDate, endDate;
 
         public Position() {
-        }
-
-        /**
-         * Create Position object with {@code title}, {@code description} and
-         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
-         * setting automatically
-         *
-         * @param startDate   start date of Position
-         * @param title       position title
-         * @param description position description
-         * @throws NullPointerException if {@code startDate} or
-         *                              {@code title} is {@code null}
-         */
-
-        public Position(String startDate,
-                        String title, String description) {
-            this(DateUtil.parse(startDate), null, title, description);
         }
 
         /**
@@ -106,11 +89,27 @@ public class Organization implements Serializable {
          * @throws NullPointerException if {@code startDate} or {@code endDate}
          *                              {@code title} is {@code null}
          */
-
         public Position(String startDate, String endDate,
                         String title, String description) {
             this(DateUtil.parse(startDate), DateUtil.parse(endDate), title, description);
         }
+
+        /**
+         * Create Position object with {@code title}, {@code description} and
+         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
+         * setting automatically
+         *
+         * @param startDate   start date of Position
+         * @param title       position title
+         * @param description position description
+         * @throws NullPointerException if {@code startDate} or
+         *                              {@code title} is {@code null}
+         */
+        public Position(String startDate,
+                        String title, String description) {
+            this(DateUtil.parse(startDate), null, title, description);
+        }
+
 
         public Position(LocalDate startDate, LocalDate endDate,
                         String title, String description) {
