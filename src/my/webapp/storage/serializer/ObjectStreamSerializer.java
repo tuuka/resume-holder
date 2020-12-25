@@ -17,24 +17,26 @@ import java.io.*;
 (http://www.skipy.ru/technics/serialization.html)
 */
 
-public class ObjectStreamSerializer implements ResumeSerializer{
+public class ObjectStreamSerializer implements ResumeSerializer {
     private String fileSuffix = ".obj";
 
-    public ObjectStreamSerializer(){}
+    public ObjectStreamSerializer() {
+    }
 
     public ObjectStreamSerializer(String fileSuffix) {
         this.fileSuffix = fileSuffix;
     }
 
     @Override
-    public String getFileSuffix(){
+    public String getFileSuffix() {
         return fileSuffix;
     }
 
     @Override
     public void saveResume(Resume r, OutputStream os) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(r);
+        try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
+            oos.writeObject(r);
+        }
     }
 
     @Override

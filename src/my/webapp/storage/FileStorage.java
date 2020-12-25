@@ -43,7 +43,7 @@ public class FileStorage extends AbstractStorage<File> {
         try {
             boolean a = file.createNewFile();
         } catch (IOException e) {
-            throw new StorageException("IO Error with file "
+            throw new StorageException("Error creating file "
                     + file.getAbsoluteFile(), e);
         }
         doUpdate(r, file);
@@ -57,20 +57,20 @@ public class FileStorage extends AbstractStorage<File> {
         } catch (FileNotFoundException e) {
             throw new StorageException("Cannot find Resume file " + file, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new StorageException("Error saving Resume to file " + file, e);
         }
     }
 
     @Override
     protected Resume doGet(File file) {
-        Resume r = null;
+        Resume r;
         try (BufferedInputStream bos = new BufferedInputStream(
                 new FileInputStream(file))) {
             r = serializer.loadResume(bos);
         } catch (FileNotFoundException e) {
             throw new StorageException("Cannot find Resume file " + file, e);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new StorageException("Error reading Resume from file " + file, e);
         }
         return r;
     }
@@ -78,7 +78,7 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected void doDelete(File file) {
         if (!file.delete()) throw
-                new StorageException("Error deleting " + file.getAbsoluteFile());
+                new StorageException("Error deleting file " + file.getAbsoluteFile());
     }
 
     @Override

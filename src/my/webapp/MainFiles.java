@@ -65,12 +65,12 @@ public class MainFiles {
 //        bios.transferTo() read();
     }
 
-    static public void getDirContent(File file, int tab){
-            System.out.println(file.getAbsolutePath());
+    public static void getDirContent(File file, int tab){
+            System.out.println("\t".repeat(tab) + file.getAbsolutePath());
             for (File f : file.listFiles()) {
                 if (f.isDirectory()) MainFiles.getDirContent(f, tab+1);
                     else {
-                        System.out.println("\t".repeat(tab) + f.getName());
+                        System.out.println("\t" + "\t".repeat(tab) + f.getName());
 
                 }
             }

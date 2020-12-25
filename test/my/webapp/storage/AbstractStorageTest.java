@@ -4,20 +4,43 @@ import my.webapp.exception.ArrayStorageOverflowException;
 import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
+import java.lang.reflect.Field;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static my.webapp.model.ResumeTest.*;
 import static org.junit.Assert.*;
 
 public abstract class AbstractStorageTest {
+    protected static Logger logger;
+    protected static Level loggerLevel;
+
+    static {
+        try {
+            Field loggerFiled = AbstractStorage.class.getDeclaredField("LOGGER");
+            loggerFiled.setAccessible(true);
+            logger = ((Logger)loggerFiled
+                    .get(AbstractStorage.class));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected Storage storage;
     protected final int CAPACITY = ArrayStorage.STORAGE_CAPACITY;
 
     public AbstractStorageTest(Storage storage) {
         this.storage = storage;
+    }
+
+    @BeforeClass
+    public static void disableLogging(){
+        if (logger != null) {
+            loggerLevel = logger.getLevel();
+            logger.setLevel(Level.OFF);
+        }
     }
 
     @Before
@@ -157,5 +180,12 @@ public abstract class AbstractStorageTest {
     @After
     public void tearDown() {
         storage.clear();
+    }
+
+    @AfterClass
+    public static void restoreLogging(){
+        if (logger != null) {
+            logger.setLevel(loggerLevel);
+        }
     }
 }

@@ -88,12 +88,29 @@ public class Organization implements Serializable {
     }
 
     public static class Position implements Serializable{
+        private static final long serialVersionUID = 1L;
         private String title, description;
 
 //        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         private LocalDate startDate, endDate;
 
         public Position() {
+        }
+
+        /**
+         * Create Position object with {@code title}, {@code description} and
+         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
+         * setting automatically
+         *
+         * @param startDate   start date of Position
+         * @param title       position title
+         * @param description position description
+         * @throws NullPointerException if {@code startDate} or
+         *                              {@code title} is {@code null}
+         */
+        public Position(String startDate,
+                        String title, String description) {
+            this(DateUtil.parse(startDate), DateUtil.NOW, title, description);
         }
 
         /**
@@ -113,23 +130,6 @@ public class Organization implements Serializable {
             this(DateUtil.parse(startDate), DateUtil.parse(endDate), title, description);
         }
 
-        /**
-         * Create Position object with {@code title}, {@code description} and
-         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
-         * setting automatically
-         *
-         * @param startDate   start date of Position
-         * @param title       position title
-         * @param description position description
-         * @throws NullPointerException if {@code startDate} or
-         *                              {@code title} is {@code null}
-         */
-        public Position(String startDate,
-                        String title, String description) {
-            this(DateUtil.parse(startDate), null, title, description);
-        }
-
-
         public Position(LocalDate startDate, LocalDate endDate,
                         String title, String description) {
             Objects.requireNonNull(startDate, "Start Date must not be null!");
@@ -140,7 +140,6 @@ public class Organization implements Serializable {
             this.endDate = endDate;
             this.description = description == null ? "" : description;
         }
-
 
         public String getTitle() { return title; }
 
