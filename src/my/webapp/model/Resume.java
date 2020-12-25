@@ -1,15 +1,23 @@
 package my.webapp.model;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
+
+//@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
     private static int count;
     private String uuid;
     private String fullName;
 
+//    @JsonDeserialize(keyAs = ContactType.class, contentAs = String.class)
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+
+//    @JsonDeserialize(keyAs = SectionType.class, contentAs = Section.class)
     private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public static final Resume EMPTY = new Resume();
@@ -21,6 +29,11 @@ public class Resume implements Comparable<Resume>, Serializable {
         EMPTY.setSection(SectionType.QUALIFICATIONS, ListSection.EMPTY);
         EMPTY.setSection(SectionType.EXPERIENCE, new OrganizationSection(Organization.EMPTY));
         EMPTY.setSection(SectionType.EDUCATION, new OrganizationSection(Organization.EMPTY));
+    }
+
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
     }
 
     public Resume(){ this("John Doe-" + (count + 1)); }
@@ -68,8 +81,6 @@ public class Resume implements Comparable<Resume>, Serializable {
     public void setSection(SectionType type, Section section){
         sections.put(type, section);
     }
-
-
 
     @Override
     public String toString() {

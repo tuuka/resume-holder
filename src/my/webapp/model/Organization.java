@@ -4,7 +4,10 @@ import my.webapp.util.DateUtil;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -12,7 +15,7 @@ public class Organization implements Serializable {
 
     public static Organization EMPTY = new Organization();
     //    private final Map<ContactType, String> contacts = new HashMap<>();
-    private List<Position> positions = new ArrayList<>();
+    private List<Position> positions;
 
     private Organization() {
     }
@@ -23,7 +26,7 @@ public class Organization implements Serializable {
 
     public Organization(Link homePage, List<Position> positions) {
         this.homePage = homePage;
-        this.positions = positions;
+        this.positions = new ArrayList<>(positions);
     }
 
     public Link getHomePage() {
@@ -70,8 +73,24 @@ public class Organization implements Serializable {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Organization)) return false;
+        Organization that = (Organization) o;
+        return Objects.equals(homePage, that.homePage) &&
+                Objects.equals(positions, that.positions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(homePage, positions);
+    }
+
     public static class Position implements Serializable{
         private String title, description;
+
+//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         private LocalDate startDate, endDate;
 
         public Position() {

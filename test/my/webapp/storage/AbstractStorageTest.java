@@ -5,7 +5,6 @@ import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.*;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +22,7 @@ public abstract class AbstractStorageTest {
 
     @Before
     public void setUp() {
-
+        storage.clear();
     }
 
     @Test
@@ -57,7 +56,7 @@ public abstract class AbstractStorageTest {
         Resume oldResume = storage.get(R2.getUuid());
         storage.update(new Resume(R2.getUuid(), "dummy"));
         assertNotEquals(storage.get(R2.getUuid()), oldResume);
-        Assert.assertThrows(StorageResumeNotFoundException.class,
+        assertThrows(StorageResumeNotFoundException.class,
                 () -> storage.update(new Resume("dummy")));
     }
 
@@ -67,7 +66,7 @@ public abstract class AbstractStorageTest {
         storage.save(R2);
         assertEquals(R2, storage.get(R2.getUuid()));
         assertEquals(R1.getUuid(), storage.get(R1.getUuid()).getUuid());
-        Assert.assertThrows(StorageResumeNotFoundException.class,
+        assertThrows(StorageResumeNotFoundException.class,
                 () -> storage.get("dummy"));
     }
 
@@ -83,7 +82,7 @@ public abstract class AbstractStorageTest {
         assertEquals(0, storage.size());
         storage.save(R2);
         storage.delete(R2.getUuid());
-        Assert.assertThrows(StorageResumeNotFoundException.class,
+        assertThrows(StorageResumeNotFoundException.class,
                 () -> storage.get(R2.getUuid()));
     }
 
@@ -98,7 +97,7 @@ public abstract class AbstractStorageTest {
     public void clear() {
         storage.clear();
         assertEquals(storage.size(), 0);
-        Assert.assertThrows(StorageResumeNotFoundException.class,
+        assertThrows(StorageResumeNotFoundException.class,
                 () -> storage.get(R2.getUuid()));
     }
 

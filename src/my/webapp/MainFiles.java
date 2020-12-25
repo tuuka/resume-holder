@@ -1,9 +1,6 @@
 package my.webapp;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Files;
@@ -63,7 +60,9 @@ public class MainFiles {
 
         MainFiles.getDirContent(my_file, 0);
 
-
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayInputStream bios = new ByteArrayInputStream(new byte[0]);
+//        bios.transferTo() read();
     }
 
     static public void getDirContent(File file, int tab){
@@ -76,4 +75,5 @@ public class MainFiles {
                 }
             }
     }
+
 }

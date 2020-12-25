@@ -90,12 +90,12 @@ public class FileStorage extends AbstractStorage<File> {
     protected void doClear() {
         for (File f : directory.listFiles())
             if (!f.delete()) throw
-                new StorageException("Can not delete file " + f);
+                    new StorageException("Can not delete file " + f);
     }
 
     @Override
     protected File getSearchKey(String uuid) {
-        return new File(directory, uuid);
+        return new File(directory, uuid + serializer.getFileSuffix());
     }
 
     @Override
