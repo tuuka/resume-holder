@@ -14,10 +14,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     private String uuid;
     private String fullName;
 
-//    @JsonDeserialize(keyAs = ContactType.class, contentAs = String.class)
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
 
-//    @JsonDeserialize(keyAs = SectionType.class, contentAs = Section.class)
     private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public static final Resume EMPTY = new Resume();

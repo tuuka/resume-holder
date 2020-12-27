@@ -5,17 +5,32 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import my.webapp.model.*;
 
+import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.EnumMap;
 
 public class MainJacksonExperiments {
     public static void main(String[] args) throws IOException {
+
+        //        String carJson = "[{\"brand\":\"ford\", \"doors\":5},{\"brand\":\"ferrari\", \"doors\":3}]";
+////        String carJson = "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
+//        JsonParser parser  = (new JsonFactory()).createParser(carJson);
+//
+//        while(!parser.isClosed()){
+//            JsonToken jsonToken = parser.nextToken();
+//            if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+//                System.out.print("field = " + parser.getCurrentName() +
+//                        " : ");
+//                parser.nextToken();
+//                System.out.println(parser.getValueAsString());
+//            } else
+//                System.out.println("jsonToken = " + jsonToken);
+//        }
+
+
+
         Resume r = new Resume("dummy.dummy", "dummy");
         r.setContact(ContactType.MOBILE, "+123456789");
         r.setContact(ContactType.PHONE, "+987654321");
@@ -37,54 +52,37 @@ public class MainJacksonExperiments {
 
 //        System.out.println(r);
 
-//        ObjectMapper om = new ObjectMapper();
-//        try {
-//            String s = om.writeValueAsString(r);
-//            System.out.println(s);
-//        } catch (
-//                JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String carJson = "[{\"brand\":\"ford\", \"doors\":5},{\"brand\":\"ferrari\", \"doors\":3}]";
-////        String carJson = "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
-//        JsonParser parser  = (new JsonFactory()).createParser(carJson);
-//
-//        while(!parser.isClosed()){
-//            JsonToken jsonToken = parser.nextToken();
-//            if(JsonToken.FIELD_NAME.equals(jsonToken)) {
-//                System.out.print("field = " + parser.getCurrentName() +
-//                        " : ");
-//                parser.nextToken();
-//                System.out.println(parser.getValueAsString());
-//            } else
-//                System.out.println("jsonToken = " + jsonToken);
-//        }
 
-        ObjectMapper newOM = JsonMapper.builder().activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType("my.webapp.")
-                        .allowIfSubType(EnumMap.class)
-                        .allowIfSubType(ArrayList.class)
-                        .allowIfSubType(LocalDate.class)
-                        .build(),
-                ObjectMapper.DefaultTyping.EVERYTHING)
-                .addModule(new JavaTimeModule())
+
+        ObjectMapper OM = JsonMapper.builder()
+                //For adding type info to output Json
+//                .activateDefaultTyping(
+//                BasicPolymorphicTypeValidator.builder()
+//                        .allowIfSubType("my.webapp.")
+//                        .allowIfSubType(EnumMap.class)
+//                        .allowIfSubType(ArrayList.class)
+//                        .allowIfSubType(LocalDate.class)
+//                        .build(),
+//                ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.WRAPPER_OBJECT)
+                .addModule(new JavaTimeModule()) // to normally work with JDK8 time
+                //JsonAutoDetect here used to avoid using
+                //@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY) annotation
                 .build().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-//        newOM.configOverride(LocalDate.class)
+        //Error when deserializing LocalDate. Need something else to store in "yyyy-MM" format
+//        OM.configOverride(LocalDate.class)
 //                .setFormat(JsonFormat.Value.forPattern("yyyy-MM"));
-        newOM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        OM.configure(SerializationFeature.INDENT_OUTPUT, true);
+        OM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        String s = newOM.writeValueAsString(r);
+        String s = OM.writeValueAsString(r);
         System.out.println(s);
 
-//        File file = new File("d:\\temp\\r.json");
-        Resume r_r = newOM.readValue(s, Resume.class);
-//        Resume r_r = om.readValue(file, Resume.class);
+        File file = new File("d:\\temp\\r.json");
+        OM.writeValue(file, r);
+//        Resume r_r = OM.readValue(s, Resume.class);
+        Resume r_r = OM.readValue(file, Resume.class);
         System.out.println(r_r.equals(r));
-
-
 
     }
 }

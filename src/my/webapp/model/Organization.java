@@ -90,8 +90,6 @@ public class Organization implements Serializable {
     public static class Position implements Serializable{
         private static final long serialVersionUID = 1L;
         private String title, description;
-
-//        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         private LocalDate startDate, endDate;
 
         public Position() {
