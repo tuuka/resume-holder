@@ -2,8 +2,8 @@ package my.webapp.storage;
 
 import my.webapp.storage.serializer.JsonJacksonSerializer;
 
-public class JacksonSerializerStorageTest extends AbstractStorageTest{
-    public JacksonSerializerStorageTest() {
+public class JacksonSerializerFileStorageTest extends AbstractStorageTest{
+    public JacksonSerializerFileStorageTest() {
         super(new FileStorage("tempStorage",
                 new JsonJacksonSerializer()));
     }

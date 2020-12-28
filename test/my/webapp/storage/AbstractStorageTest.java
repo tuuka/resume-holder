@@ -106,7 +106,7 @@ public abstract class AbstractStorageTest {
         storage.save(R2);
         storage.delete(R2.getUuid());
         assertThrows(StorageResumeNotFoundException.class,
-                () -> storage.get(R2.getUuid()));
+                () -> storage.delete(R2.getUuid()));
     }
 
     @Test

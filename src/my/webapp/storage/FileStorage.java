@@ -12,6 +12,7 @@ import java.util.Objects;
 
 public class FileStorage extends AbstractStorage<File> {
     private final File directory;
+    // Паттерн "Стратегия" - вставляем объект-стратегию поведения сериализации
     private final ResumeSerializer serializer;
 
     public FileStorage(String directory, ResumeSerializer serializer) {
