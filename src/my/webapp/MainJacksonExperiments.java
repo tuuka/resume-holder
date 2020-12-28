@@ -1,10 +1,12 @@
 package my.webapp;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import my.webapp.model.*;
 
@@ -72,6 +74,7 @@ public class MainJacksonExperiments {
         //Error when deserializing LocalDate. Need something else to store in "yyyy-MM" format
 //        OM.configOverride(LocalDate.class)
 //                .setFormat(JsonFormat.Value.forPattern("yyyy-MM"));
+
         OM.configure(SerializationFeature.INDENT_OUTPUT, true);
         OM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
@@ -84,5 +87,24 @@ public class MainJacksonExperiments {
         Resume r_r = OM.readValue(file, Resume.class);
         System.out.println(r_r.equals(r));
 
+
+
+        ObjectMapper xmlOM = XmlMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        xmlOM.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        xmlOM.configure(SerializationFeature.INDENT_OUTPUT, true);
+        xmlOM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        xmlOM.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+
+        r = new Resume("111", "222");
+        String json = OM.writeValueAsString(r);
+        String xml = xmlOM.writeValueAsString(r);
+        System.out.println(xml);
+        Resume r_xml = xmlOM.readValue(xml, Resume.class);
+        Resume r_json = OM.readValue(json, Resume.class);
+        System.out.println(r_xml.equals(r));
+        System.out.println(r_xml);
     }
 }

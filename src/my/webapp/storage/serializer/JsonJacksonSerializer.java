@@ -20,23 +20,16 @@ jackson-datatype-jsr310-2.10.2.jar
 */
 
 public class JsonJacksonSerializer implements ResumeSerializer{
+    protected ObjectMapper OM;
+    protected String fileSuffix;
 
-    protected static final ObjectMapper OM = JsonMapper.builder()
-            //Adding LocalDate support
-            .addModule(new JavaTimeModule())
-            .build()
-            //We can also use annotation to Resume class:
-            // @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-            .setVisibility(PropertyAccessor.FIELD,
-                    JsonAutoDetect.Visibility.ANY)
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .configure(SerializationFeature.INDENT_OUTPUT, true);
-
-    private String fileSuffix = ".json";
-
-    public JsonJacksonSerializer(){}
+    public JsonJacksonSerializer(){this(".xml");}
 
     public JsonJacksonSerializer(String fileSuffix) {
+        OM = getConfiguredMapper(JsonMapper.builder()
+                //Adding LocalDate support
+                .addModule(new JavaTimeModule())
+                .build());
         this.fileSuffix = fileSuffix;
     }
 
@@ -53,5 +46,15 @@ public class JsonJacksonSerializer implements ResumeSerializer{
     @Override
     public Resume loadResume(InputStream is) throws IOException {
         return OM.readValue(is, Resume.class);
+    }
+
+    protected ObjectMapper getConfiguredMapper(ObjectMapper om){
+        return om
+                //We can also use annotation to Resume class:
+                // @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+                .setVisibility(PropertyAccessor.FIELD,
+                        JsonAutoDetect.Visibility.ANY)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .configure(SerializationFeature.INDENT_OUTPUT, true);
     }
 }

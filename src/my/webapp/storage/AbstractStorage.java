@@ -98,13 +98,13 @@ public abstract class AbstractStorage<K> implements Storage{
 
     @Override
     public void save(Resume r) {
-        LOGGER.info("Saving resume " + r + ".");
+        LOGGER.info("Saving resume " + r.getUuid() + ".");
         doSave(r, getNotExistedSearchKey(r.getUuid()));
     }
 
     @Override
     public void update(Resume r) {
-        LOGGER.info("Updating resume " + r + ".");
+        LOGGER.info("Updating resume " + r.getUuid() + ".");
         doUpdate(r, getExistedSearchKey(r.getUuid()));
     }
 

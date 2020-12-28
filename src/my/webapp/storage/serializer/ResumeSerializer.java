@@ -8,9 +8,7 @@ import java.io.OutputStream;
 
 public interface ResumeSerializer {
 
-    default String getFileSuffix(){
-        return ".res";
-    }
+    default String getFileSuffix(){ return ".res"; }
 
     void saveResume(Resume r, OutputStream os) throws IOException;
 
