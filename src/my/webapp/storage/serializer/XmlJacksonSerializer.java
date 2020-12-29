@@ -2,7 +2,6 @@ package my.webapp.storage.serializer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class XmlJacksonSerializer extends JsonJacksonSerializer {
 
@@ -14,7 +13,7 @@ public class XmlJacksonSerializer extends JsonJacksonSerializer {
         OM = getConfiguredMapper(
                 XmlMapper.builder()
                 //Adding LocalDate support
-                .addModule(new JavaTimeModule())
+//                .addModule(new JavaTimeModule())
                 .build())
                 //to avoid NullPointerException when deserializing empty fields
                 .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

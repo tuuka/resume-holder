@@ -7,10 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import my.webapp.model.*;
 
-import java.io.File;
 import java.io.IOException;
 
 public class MainJacksonExperiments {
@@ -65,11 +63,13 @@ public class MainJacksonExperiments {
 //                        .allowIfSubType(ArrayList.class)
 //                        .allowIfSubType(LocalDate.class)
 //                        .build(),
-//                ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.WRAPPER_OBJECT)
-                .addModule(new JavaTimeModule()) // to normally work with JDK8 time
+//                ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.PROPERTY)
+//                .addModule(new JavaTimeModule()) // to normally work with JDK8 time
+                .build()
                 //JsonAutoDetect here used to avoid using
                 //@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY) annotation
-                .build().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+                ;
 
         //Error when deserializing LocalDate. Need something else to store in "yyyy-MM" format
 //        OM.configOverride(LocalDate.class)
@@ -81,30 +81,23 @@ public class MainJacksonExperiments {
         String s = OM.writeValueAsString(r);
         System.out.println(s);
 
-        File file = new File("d:\\temp\\r.json");
-        OM.writeValue(file, r);
-//        Resume r_r = OM.readValue(s, Resume.class);
-        Resume r_r = OM.readValue(file, Resume.class);
+//        File file = new File("d:\\temp\\r.json");
+//        OM.writeValue(file, r);
+        Resume r_r = OM.readValue(s, Resume.class);
+//        Resume r_r = OM.readValue(file, Resume.class);
         System.out.println(r_r.equals(r));
 
 
 
         ObjectMapper xmlOM = XmlMapper.builder()
-                .addModule(new JavaTimeModule())
+//                .addModule(new JavaTimeModule())
                 .build();
         xmlOM.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         xmlOM.configure(SerializationFeature.INDENT_OUTPUT, true);
         xmlOM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         xmlOM.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        System.out.println(xmlOM.writeValueAsString(r));
 
 
-        r = new Resume("111", "222");
-        String json = OM.writeValueAsString(r);
-        String xml = xmlOM.writeValueAsString(r);
-        System.out.println(xml);
-        Resume r_xml = xmlOM.readValue(xml, Resume.class);
-        Resume r_json = OM.readValue(json, Resume.class);
-        System.out.println(r_xml.equals(r));
-        System.out.println(r_xml);
     }
 }

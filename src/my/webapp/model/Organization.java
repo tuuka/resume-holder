@@ -1,5 +1,7 @@
 package my.webapp.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import my.webapp.util.DateUtil;
 
 import java.io.Serializable;
@@ -90,6 +92,9 @@ public class Organization implements Serializable {
     public static class Position implements Serializable{
         private static final long serialVersionUID = 1L;
         private String title, description;
+
+        @JsonSerialize(converter = DateUtil.LocalDateToStringConverter.class)
+        @JsonDeserialize(converter = DateUtil.StringToLocalDateConverter.class)
         private LocalDate startDate, endDate;
 
         public Position() {

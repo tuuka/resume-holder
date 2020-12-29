@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import my.webapp.model.Resume;
 
 import java.io.IOException;
@@ -23,12 +22,12 @@ public class JsonJacksonSerializer implements ResumeSerializer{
     protected ObjectMapper OM;
     protected String fileSuffix;
 
-    public JsonJacksonSerializer(){this(".xml");}
+    public JsonJacksonSerializer(){this(".json");}
 
     public JsonJacksonSerializer(String fileSuffix) {
         OM = getConfiguredMapper(JsonMapper.builder()
                 //Adding LocalDate support
-                .addModule(new JavaTimeModule())
+//                .addModule(new JavaTimeModule())
                 .build());
         this.fileSuffix = fileSuffix;
     }

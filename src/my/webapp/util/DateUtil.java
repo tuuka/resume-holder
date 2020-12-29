@@ -1,5 +1,7 @@
 package my.webapp.util;
 
+import com.fasterxml.jackson.databind.util.StdConverter;
+
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
@@ -25,4 +27,28 @@ public class DateUtil {
         return LocalDate.of(yearMonth.getYear(),
                 yearMonth.getMonth(), 1);
     }
+
+
+
+/*  Converters to serialize/deserialize LocalDate into/from Jackson Json
+    without JavaTimeModule but with field annotation :
+     @JsonSerialize(converter = DateUtil.LocalDateToStringConverter.class)
+     @JsonDeserialize(converter = DateUtil.StringToLocalDateConverter.class)*/
+
+    public static class LocalDateToStringConverter extends StdConverter<LocalDate, String> {
+
+        @Override
+        public String convert(LocalDate value) {
+            return value.format(DATE_FORMATTER);
+        }
+    }
+
+    public static class StringToLocalDateConverter extends StdConverter<String, LocalDate> {
+
+        @Override
+        public LocalDate convert(String value) {
+            return parse(value);
+        }
+    }
+
 }
