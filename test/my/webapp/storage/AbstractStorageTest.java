@@ -4,14 +4,14 @@ import my.webapp.exception.ArrayStorageOverflowException;
 import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static my.webapp.model.ResumeTest.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
     protected static Logger logger;
@@ -35,7 +35,7 @@ public abstract class AbstractStorageTest {
         this.storage = storage;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void disableLogging(){
         if (logger != null) {
             loggerLevel = logger.getLevel();
@@ -43,7 +43,7 @@ public abstract class AbstractStorageTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         storage.clear();
     }
@@ -149,25 +149,7 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void fulfilledResumeTest(){
-        Resume r = new Resume("dummy.dummy", "dummy");
-        r.setContact(ContactType.MOBILE, "+123456789");
-        r.setContact(ContactType.PHONE, "+987654321");
-        Organization.Position p1 = new Organization.Position("11/2000", "12/2000", "worker1", "dummy worker 1");
-        Organization.Position p2 = new Organization.Position("12/2001", "01/2002", "worker2", "dummy worker 2");
-        Organization.Position p3 = new Organization.Position("02/2003", "12/2003", "worker3", "dummy worker 3");
-        Organization.Position p4 = new Organization.Position("05/2005", "06/2006", "worker4", "dummy worker 4");
-        Organization o1 = new Organization("Dummy company1", "dummy.company1@gmail.com", p1, p2);
-        Organization o2 = new Organization("Dummy company2", "dummy.company2@gmail.com", p3);
-        Organization o3 = new Organization("Dummy company3", "dummy.company3@gmail.com", p4);
-        r.setSection(SectionType.EXPERIENCE, new OrganizationSection(o1, o2, o3));
-        r.setSection(SectionType.QUALIFICATIONS, new ListSection("Can dig", "Can to not dig", "Can sleep"));
-        r.setSection(SectionType.ACHIEVEMENT, new ListSection("Know how to dig", "Know how to not dig", "Know how to sleep"));
-        r.setSection(SectionType.EDUCATION, new OrganizationSection(
-                new Organization("Dummy company4", "dummy.company4@gmail.com",
-                        new Organization.Position("01/1999", "10/1999", "student", "had been learning how to dig"))));
-        r.setSection(SectionType.PERSONAL, new TextSection("Very good person that can work hard in area of digging."));
-        r.setSection(SectionType.OBJECTIVE, new TextSection("Experienced digger"));
-        storage.save(r);
+        storage.save(R1);
         Resume r_loaded = storage.get("dummy.dummy");
         assertEquals("dummy", r_loaded.getFullName());
         assertEquals("Very good person that can work hard in area of digging.",
@@ -177,12 +159,12 @@ public abstract class AbstractStorageTest {
                 .getOrganizations().get(0).getPositions().get(0).getTitle());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         storage.clear();
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreLogging(){
         if (logger != null) {
             logger.setLevel(loggerLevel);
