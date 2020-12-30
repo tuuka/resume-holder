@@ -1,9 +1,5 @@
 package my.webapp.storage.serializer;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import my.webapp.model.*;
 
 import javax.xml.bind.JAXBContext;
@@ -20,9 +16,8 @@ jaxb-impl-2.3.2
 jaxb-runtime-3.0.0
 */
 
-public class XmlJaxbSerializer implements ResumeSerializer{
+public class XmlJaxbSerializer extends ResumeSerializer{
     protected XmlJaxbParser jaxbParser;
-    protected String fileSuffix;
 
     public XmlJaxbSerializer(){this(".xml");}
 
@@ -36,13 +31,7 @@ public class XmlJaxbSerializer implements ResumeSerializer{
                 ListSection.class,
                 TextSection.class
         );
-
         this.fileSuffix = fileSuffix;
-    }
-
-    @Override
-    public String getFileSuffix(){
-        return fileSuffix;
     }
 
     @Override
@@ -57,16 +46,6 @@ public class XmlJaxbSerializer implements ResumeSerializer{
         try (Reader r = new InputStreamReader(is)){
             return jaxbParser.unmarshall(r);
         }
-    }
-
-    protected ObjectMapper getConfiguredMapper(ObjectMapper om){
-        return om
-                //We can also use annotation to Resume class:
-                // @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-                .setVisibility(PropertyAccessor.FIELD,
-                        JsonAutoDetect.Visibility.ANY)
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .configure(SerializationFeature.INDENT_OUTPUT, true);
     }
 }
 

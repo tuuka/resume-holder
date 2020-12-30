@@ -18,9 +18,8 @@ jackson-databind-2.10.2.jar
 jackson-datatype-jsr310-2.10.2.jar
 */
 
-public class JsonJacksonSerializer implements ResumeSerializer{
+public class JsonJacksonSerializer extends ResumeSerializer{
     protected ObjectMapper OM;
-    protected String fileSuffix;
 
     public JsonJacksonSerializer(){this(".json");}
 
@@ -30,11 +29,6 @@ public class JsonJacksonSerializer implements ResumeSerializer{
 //                .addModule(new JavaTimeModule())
                 .build());
         this.fileSuffix = fileSuffix;
-    }
-
-    @Override
-    public String getFileSuffix(){
-        return fileSuffix;
     }
 
     @Override

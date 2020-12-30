@@ -9,28 +9,10 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import my.webapp.model.*;
 
-import java.io.IOException;
+import java.io.*;
 
 public class MainJacksonExperiments {
-    public static void main(String[] args) throws IOException {
-
-        //        String carJson = "[{\"brand\":\"ford\", \"doors\":5},{\"brand\":\"ferrari\", \"doors\":3}]";
-////        String carJson = "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
-//        JsonParser parser  = (new JsonFactory()).createParser(carJson);
-//
-//        while(!parser.isClosed()){
-//            JsonToken jsonToken = parser.nextToken();
-//            if(JsonToken.FIELD_NAME.equals(jsonToken)) {
-//                System.out.print("field = " + parser.getCurrentName() +
-//                        " : ");
-//                parser.nextToken();
-//                System.out.println(parser.getValueAsString());
-//            } else
-//                System.out.println("jsonToken = " + jsonToken);
-//        }
-
-
-
+    public static Resume generateResume(){
         Resume r = new Resume("dummy.dummy", "dummy");
         r.setContact(ContactType.MOBILE, "+123456789");
         r.setContact(ContactType.PHONE, "+987654321");
@@ -49,10 +31,27 @@ public class MainJacksonExperiments {
                         new Organization.Position("01/1999", "10/1999", "student", "had been learning how to dig"))));
         r.setSection(SectionType.PERSONAL, new TextSection("Very good person that can work hard in area of digging."));
         r.setSection(SectionType.OBJECTIVE, new TextSection("Experienced digger"));
+        return r;
+    }
 
-//        System.out.println(r);
+    public static void main(String[] args) throws IOException {
 
+        //        String carJson = "[{\"brand\":\"ford\", \"doors\":5},{\"brand\":\"ferrari\", \"doors\":3}]";
+////        String carJson = "{ \"brand\" : \"Mercedes\", \"doors\" : 5 }";
+//        JsonParser parser  = (new JsonFactory()).createParser(carJson);
+//
+//        while(!parser.isClosed()){
+//            JsonToken jsonToken = parser.nextToken();
+//            if(JsonToken.FIELD_NAME.equals(jsonToken)) {
+//                System.out.print("field = " + parser.getCurrentName() +
+//                        " : ");
+//                parser.nextToken();
+//                System.out.println(parser.getValueAsString());
+//            } else
+//                System.out.println("jsonToken = " + jsonToken);
+//        }
 
+        Resume r = MainJacksonExperiments.generateResume();
 
         ObjectMapper OM = JsonMapper.builder()
                 //For adding type info to output Json
@@ -97,7 +96,6 @@ public class MainJacksonExperiments {
         xmlOM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         xmlOM.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         System.out.println(xmlOM.writeValueAsString(r));
-
 
     }
 }

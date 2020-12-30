@@ -33,11 +33,6 @@ public class Resume implements Comparable<Resume>, Serializable {
         EMPTY.setSection(SectionType.EDUCATION, new OrganizationSection(Organization.EMPTY));
     }
 
-
-    public Map<ContactType, String> getContacts() {
-        return contacts;
-    }
-
     public Resume(){ this("John Doe-" + (count + 1)); }
 
     public Resume(String fullName){
@@ -52,29 +47,17 @@ public class Resume implements Comparable<Resume>, Serializable {
         count++;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
+    public String getUuid() { return uuid; }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
+    public void setUuid(String uuid) { this.uuid = uuid; }
 
-    public String getFullName() {
-        return fullName;
-    }
+    public String getFullName() { return fullName; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
-    public String getContact(ContactType type){
-        return contacts.get(type);
-    }
+    public String getContact(ContactType type){ return contacts.get(type); }
 
-    public Section getSection(SectionType type) {
-        return sections.get(type);
-    }
+    public Section getSection(SectionType type) { return sections.get(type); }
 
     public void setContact(ContactType type, String value){
         contacts.put(type, value);
@@ -83,6 +66,10 @@ public class Resume implements Comparable<Resume>, Serializable {
     public void setSection(SectionType type, Section section){
         sections.put(type, section);
     }
+
+    public Map<ContactType, String> getContacts() { return contacts; }
+
+    public Map<SectionType, Section> getSections() { return sections; }
 
     @Override
     public String toString() {

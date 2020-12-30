@@ -17,19 +17,14 @@ import java.io.*;
 (http://www.skipy.ru/technics/serialization.html)
 */
 
-public class ObjectStreamSerializer implements ResumeSerializer {
-    private String fileSuffix = ".obj";
+public class ObjectStreamSerializer extends ResumeSerializer {
 
     public ObjectStreamSerializer() {
+        this(".obj");
     }
 
     public ObjectStreamSerializer(String fileSuffix) {
         this.fileSuffix = fileSuffix;
-    }
-
-    @Override
-    public String getFileSuffix() {
-        return fileSuffix;
     }
 
     @Override
