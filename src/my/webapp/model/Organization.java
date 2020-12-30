@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import my.webapp.util.DateUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
     private static final long serialVersionUID = 1L;
     private Link homePage;
@@ -89,12 +93,15 @@ public class Organization implements Serializable {
         return Objects.hash(homePage, positions);
     }
 
+
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable{
         private static final long serialVersionUID = 1L;
         private String title, description;
 
         @JsonSerialize(converter = DateUtil.LocalDateToStringConverter.class)
         @JsonDeserialize(converter = DateUtil.StringToLocalDateConverter.class)
+        @XmlJavaTypeAdapter(DateUtil.LocalDateJaxbAdapter.class)
         private LocalDate startDate, endDate;
 
         public Position() {

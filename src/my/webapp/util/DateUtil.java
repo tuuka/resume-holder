@@ -2,6 +2,7 @@ package my.webapp.util;
 
 import com.fasterxml.jackson.databind.util.StdConverter;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
@@ -48,6 +49,19 @@ public class DateUtil {
         @Override
         public LocalDate convert(String value) {
             return parse(value);
+        }
+    }
+
+
+    public static class LocalDateJaxbAdapter extends XmlAdapter<String, LocalDate> {
+        @Override
+        public LocalDate unmarshal(String value) {
+            return parse(value);
+        }
+
+        @Override
+        public String marshal(LocalDate value) {
+            return value.format(DATE_FORMATTER);
         }
     }
 
