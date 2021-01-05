@@ -1,5 +1,6 @@
 package my.webapp.storage;
 
+import my.webapp.Config;
 import my.webapp.exception.StorageException;
 import my.webapp.model.Resume;
 import my.webapp.storage.serializer.ObjectStreamSerializer;
@@ -20,7 +21,7 @@ public class FileStorage extends AbstractStorage<File> {
     }
 
     public FileStorage(ResumeSerializer serializer) {
-        this(new File("fileStorage"), serializer);
+        this(new File(Config.get().getStorageDir()), serializer);
     }
 
     public FileStorage(File directory, ResumeSerializer serializer) {
@@ -84,14 +85,21 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected int doSize() {
-        return directory.listFiles().length;
+        String[] list = directory.list();
+        if (list == null) {
+            throw new StorageException("Directory read error");
+        }
+        return list.length;
     }
 
     @Override
     protected void doClear() {
-        for (File f : directory.listFiles())
-            if (!f.delete()) throw
-                    new StorageException("Can not delete file " + f);
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                doDelete(file);
+            }
+        }
     }
 
     @Override
@@ -106,8 +114,12 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume[] doGetAll() {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("Directory read error");
+        }
         List<Resume> resumes = new ArrayList<>();
-        for (File f : directory.listFiles())
+        for (File f : files)
             resumes.add(doGet(f));
         return resumes.toArray(new Resume[0]);
     }

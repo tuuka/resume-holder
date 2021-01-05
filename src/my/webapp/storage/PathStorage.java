@@ -1,5 +1,6 @@
 package my.webapp.storage;
 
+import my.webapp.Config;
 import my.webapp.exception.StorageException;
 import my.webapp.model.Resume;
 import my.webapp.storage.serializer.ObjectStreamSerializer;
@@ -22,7 +23,7 @@ public class PathStorage extends AbstractStorage<Path> {
     }
 
     public PathStorage(ResumeSerializer serializer) {
-        this(Path.of("fileStorage"), serializer);
+        this(Path.of(Config.get().getStorageDir()), serializer);
     }
 
     public PathStorage(Path directory, ResumeSerializer serializer) {

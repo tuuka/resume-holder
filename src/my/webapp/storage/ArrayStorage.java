@@ -1,6 +1,7 @@
 package my.webapp.storage;
 
 
+import my.webapp.Config;
 import my.webapp.exception.ArrayStorageOverflowException;
 import my.webapp.model.Resume;
 
@@ -8,7 +9,7 @@ import java.util.Arrays;
 
 public class ArrayStorage extends AbstractStorage<Integer> {
 
-    protected static final int STORAGE_CAPACITY = 20;
+    protected static final int STORAGE_CAPACITY = Config.get().getArrayCapacity();
 
     protected final Resume[] storage = new Resume[STORAGE_CAPACITY];
     protected int size = 0;

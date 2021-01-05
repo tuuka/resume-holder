@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import my.webapp.model.*;
 
-import java.io.*;
+import java.io.IOException;
 
 public class MainJacksonExperiments {
     public static Resume generateResume(){
@@ -96,6 +96,10 @@ public class MainJacksonExperiments {
         xmlOM.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         xmlOM.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         System.out.println(xmlOM.writeValueAsString(r));
+
+
+        System.out.println("----------------------");
+
 
     }
 }

@@ -17,6 +17,7 @@ jaxb-runtime-3.0.0
 */
 
 public class XmlJaxbSerializer extends ResumeSerializer{
+
     protected XmlJaxbParser jaxbParser;
 
     public XmlJaxbSerializer(){this(".xml");}
@@ -47,38 +48,40 @@ public class XmlJaxbSerializer extends ResumeSerializer{
             return jaxbParser.unmarshall(r);
         }
     }
-}
 
-class XmlJaxbParser{
-    private final Marshaller marshaller;
-    private final Unmarshaller unmarshaller;
+    static class XmlJaxbParser{
+        private final Marshaller marshaller;
+        private final Unmarshaller unmarshaller;
 
-    public XmlJaxbParser(Class<?>... classesToBeBound) {
-        try {
-            JAXBContext ctx = JAXBContext.newInstance(classesToBeBound);
-            marshaller = ctx.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        public XmlJaxbParser(Class<?>... classesToBeBound) {
+            try {
+                JAXBContext ctx = JAXBContext.newInstance(classesToBeBound);
+                marshaller = ctx.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 //            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            unmarshaller = ctx.createUnmarshaller();
-        } catch (JAXBException e) {
-            throw new IllegalStateException(e);
+                unmarshaller = ctx.createUnmarshaller();
+            } catch (JAXBException e) {
+                throw new IllegalStateException(e);
+            }
         }
-    }
-    @SuppressWarnings("unchecked")
-    public <T> T unmarshall(Reader reader){
-        try {
-            return (T) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            throw new IllegalStateException(e);
+        @SuppressWarnings("unchecked")
+        public <T> T unmarshall(Reader reader){
+            try {
+                return (T) unmarshaller.unmarshal(reader);
+            } catch (JAXBException e) {
+                throw new IllegalStateException(e);
+            }
         }
-    }
 
-    public void marshall (Object instance, Writer writer){
-        try {
-            marshaller.marshal(instance, writer);
-        } catch (JAXBException e) {
-            throw new IllegalStateException(e);
+        public void marshall (Object instance, Writer writer){
+            try {
+                marshaller.marshal(instance, writer);
+            } catch (JAXBException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 }
+
+
 

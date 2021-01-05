@@ -1,5 +1,6 @@
 package my.webapp.storage;
 
+import my.webapp.Config;
 import my.webapp.exception.ArrayStorageOverflowException;
 import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.exception.StorageResumeNotFoundException;
@@ -14,6 +15,7 @@ import static my.webapp.model.ResumeTest.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
+    protected static String STORAGE_DIR = Config.get().getStorageDir();
     protected static Logger logger;
     protected static Level loggerLevel;
 
