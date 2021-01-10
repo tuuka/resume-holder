@@ -2,12 +2,17 @@ package my.webapp.storage;
 
 import my.webapp.Config;
 import my.webapp.exception.ArrayStorageOverflowException;
-import my.webapp.exception.StorageResumeExistsException;
-import my.webapp.exception.StorageResumeNotFoundException;
-import my.webapp.model.*;
-import org.junit.jupiter.api.*;
+import my.webapp.exception.StorageException;
+import my.webapp.model.ContactType;
+import my.webapp.model.Resume;
+import my.webapp.model.Section;
+import my.webapp.model.SectionType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,54 +24,40 @@ public abstract class AbstractStorageTest {
     protected static Logger logger;
     protected static Level loggerLevel;
 
-    static {
-        try {
-            Field loggerFiled = AbstractStorage.class.getDeclaredField("LOGGER");
-            loggerFiled.setAccessible(true);
-            logger = ((Logger)loggerFiled
-                    .get(AbstractStorage.class));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     protected Storage storage;
     protected final int CAPACITY = ArrayStorage.STORAGE_CAPACITY;
+    protected List<Resume> resumes;
 
     public AbstractStorageTest(Storage storage) {
         this.storage = storage;
-    }
-
-    @BeforeAll
-    public static void disableLogging(){
-        if (logger != null) {
-            loggerLevel = logger.getLevel();
-            logger.setLevel(Level.OFF);
-        }
+        resumes = Resume.generateNFakeResumes(CAPACITY);
     }
 
     @BeforeEach
     public void setUp() {
+        logger = Storage.LOGGER;
+        loggerLevel = logger.getLevel();
+        logger.setLevel(Level.OFF);
         storage.clear();
     }
 
     @Test
     public void save() {
         for (int i = 4; i < CAPACITY; i++)
-            storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
+            storage.save(resumes.get(i));
         storage.save(R1);
         storage.save(R2);
-        assertEquals(storage.size(), CAPACITY - 2);
-        storage.save(R3);
-        storage.save(R4);
-        assertThrows(StorageResumeExistsException.class,
-                () -> storage.save(R4));
+        assertEquals(storage.size(), CAPACITY - 2,
+                "Storage size didn't increase after saving!");
+        assertThrows(StorageException.class,
+                () -> storage.save(R1),
+                "Attempt to save existing resume have to throw " +
+                        "'StorageResumeExistsException'!");
     }
 
     @Test
     public void saveOverflowTest() {
         if (storage instanceof ArrayStorage) {
-            storage.clear();
             for (int i = 0; i < CAPACITY; i++)
                 storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
             assertThrows(ArrayStorageOverflowException.class,
@@ -76,54 +67,72 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() {
-        storage.save(R1);
-        storage.save(R2);
-        Resume oldResume = storage.get(R2.getUuid());
-        storage.update(new Resume(R2.getUuid(), "dummy"));
-        assertNotEquals(storage.get(R2.getUuid()), oldResume);
-        assertThrows(StorageResumeNotFoundException.class,
-                () -> storage.update(new Resume("dummy")));
+        storage.save(resumes.get(0));
+        storage.save(resumes.get(1));
+        Resume r = new Resume(resumes.get(0).getUuid(), resumes.get(0).getFullName());
+        for (Map.Entry<ContactType, String> entry :
+                resumes.get(2).getContacts().entrySet()) {
+            r.setContact(entry.getKey(), entry.getValue());
+        }
+        for (Map.Entry<SectionType, Section> entry :
+                resumes.get(2).getSections().entrySet()) {
+            r.setSection(entry.getKey(), entry.getValue());
+        }
+        storage.update(r);
+        assertNotEquals(resumes.get(0), storage.get(resumes.get(0).getUuid()),
+                "Original and modified resume should not be equal!");
+        assertThrows(StorageException.class,
+                () -> storage.update(new Resume("dummy")),
+                "Attempt to change a non-existent resume should throw" +
+                        " 'StorageException'");
     }
 
     @Test
     public void get() {
-        storage.save(R1);
-        storage.save(R2);
-        assertEquals(R2, storage.get(R2.getUuid()));
-        assertEquals(R1.getUuid(), storage.get(R1.getUuid()).getUuid());
-        assertThrows(StorageResumeNotFoundException.class,
-                () -> storage.get("dummy"));
+        storage.save(resumes.get(0));
+        storage.save(resumes.get(1));
+        assertAll("getting resumes",
+                () -> assertEquals(resumes.get(0), storage.get(resumes.get(0).getUuid())),
+                () -> assertEquals(resumes.get(1), storage.get(resumes.get(1).getUuid()))
+        );
+        assertThrows(StorageException.class,
+                () -> storage.get("dummy"),
+                "Attempt to get a non-existent resume should throw" +
+                        " 'StorageException'");
     }
 
     @Test
     public void delete() {
-        storage.clear();
-        for (int i = CAPACITY; i > 0; i--)
-            storage.save(new Resume(String.valueOf(i), String.valueOf(i)));
-        assertEquals(CAPACITY, storage.size());
-        for (int i = CAPACITY; i > 0; i--) {
-            storage.delete(String.valueOf(i));
-        }
-        assertEquals(0, storage.size());
-        storage.save(R2);
-        storage.delete(R2.getUuid());
-        assertThrows(StorageResumeNotFoundException.class,
-                () -> storage.delete(R2.getUuid()));
+        storage.save(resumes.get(0));
+        storage.save(resumes.get(1));
+        storage.delete(resumes.get(0).getUuid());
+        assertEquals(1, storage.size(),
+                "Storage size didn't decrease after deletion!");
+        storage.delete(resumes.get(1).getUuid());
+        assertThrows(StorageException.class,
+                () -> storage.delete(resumes.get(1).getUuid()),
+                "Attempt to delete a non-existent resume should throw" +
+                        " 'StorageException'!");
     }
 
     @Test
     public void size() {
-        storage.save(R1);
-        storage.save(R2);
-        assertEquals(2, storage.size());
+        storage.save(resumes.get(0));
+        storage.save(resumes.get(1));
+        assertEquals(2, storage.size(), "Storage size have to " +
+                "be equal to number of stored resumes!");
     }
 
     @Test
     public void clear() {
+        storage.save(resumes.get(0));
+        storage.save(resumes.get(1));
         storage.clear();
-        assertEquals(storage.size(), 0);
-        assertThrows(StorageResumeNotFoundException.class,
-                () -> storage.get(R2.getUuid()));
+        assertEquals(0, storage.size(),
+                "Clear() have to zero storage size!");
+        assertThrows(StorageException.class,
+                () -> storage.get(resumes.get(0).getUuid()),
+                "After clear() there have not be any resumes!");
     }
 
     @Test
@@ -149,25 +158,9 @@ public abstract class AbstractStorageTest {
         assertEquals(array.length, 2);
     }
 
-    @Test
-    public void fulfilledResumeTest(){
-        storage.save(R1);
-        Resume r_loaded = storage.get("dummy.dummy");
-        assertEquals("dummy", r_loaded.getFullName());
-        assertEquals("Very good person that can work hard in area of digging.",
-                ((TextSection)r_loaded.getSection(SectionType.PERSONAL)).getContent());
-        assertEquals(3, ((OrganizationSection)r_loaded.getSection(SectionType.EXPERIENCE)).getOrganizations().size());
-        assertEquals("student", ((OrganizationSection)r_loaded.getSection(SectionType.EDUCATION))
-                .getOrganizations().get(0).getPositions().get(0).getTitle());
-    }
-
     @AfterEach
     public void tearDown() {
         storage.clear();
-    }
-
-    @AfterAll
-    public static void restoreLogging(){
         if (logger != null) {
             logger.setLevel(loggerLevel);
         }

@@ -5,8 +5,6 @@ import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
-import java.util.Date;
-import java.util.logging.*;
 
 
 /* Абстрактный класс для всех хранилищ. K - ключ, используемый для поиска
@@ -15,50 +13,6 @@ import java.util.logging.*;
 * дочерних классах. */
 
 public abstract class AbstractStorage<K> implements Storage{
-
-    private static final Logger LOGGER;
-
-//    static {
-//        //https://www.logicbig.com/tutorials/core-java-tutorial/logging/customizing-default-format.html
-//        System.setProperty("java.util.logging.SimpleFormatter.format",
-//                "[%1$tF %1$tT] [%4$-7s] %5$s %n");
-//        LOGGER = Logger.getLogger(ArrayStorage.class.getName());
-//    }
-
-    static {
-        SimpleFormatter sf = new SimpleFormatter() {
-            private static final String format = "[%1$tF %1$tT] [%2$-7s] %3$s %n";
-
-            @Override
-            public synchronized String format(LogRecord lr) {
-                return String.format(format,
-                        new Date(lr.getMillis()),
-                        lr.getLevel().getLocalizedName(),
-                        lr.getMessage()
-                );
-            }
-        };
-
-        // Switching off parents' log levels and adding custom messages format
-        Logger mainLogger = Logger.getLogger(AbstractStorage.class.getPackageName());
-        mainLogger.setUseParentHandlers(false);
-        ConsoleHandler handler = new ConsoleHandler();
-        handler.setFormatter(sf);
-
-        // Adding log to file
-//        FileHandler fileHandler;
-//        try {
-//            fileHandler = new FileHandler("D:\\temp\\storage.log", true);
-//            fileHandler.setFormatter(sf);
-//            mainLogger.addHandler(fileHandler);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        mainLogger.addHandler(handler);
-        LOGGER = Logger.getLogger(ArrayStorage.class.getName());
-        LOGGER.setLevel(Level.WARNING);
-    }
 
     protected abstract void doSave(Resume r, K key);
 
@@ -140,4 +94,5 @@ public abstract class AbstractStorage<K> implements Storage{
         if (pos > size()) pos = size();
         return Arrays.copyOfRange(getAll(), 0, pos);
     }
+
 }

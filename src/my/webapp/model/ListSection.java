@@ -10,11 +10,13 @@ public class ListSection extends Section {
     private final List<String> items;
     public static final ListSection EMPTY = new ListSection();
 
-    public ListSection(){
+    public ListSection() {
         this("");
     }
 
-    public ListSection(String... items) { this(Arrays.asList(items)); }
+    public ListSection(String... items) {
+        this(Arrays.asList(items));
+    }
 
     public ListSection(List<String> items) {
         Objects.requireNonNull(items, "items must not be null");
@@ -24,6 +26,8 @@ public class ListSection extends Section {
     public List<String> getItems() {
         return this.items;
     }
+
+    public void addItem(String item) { items.add(item); }
 
     @Override
     public boolean equals(Object o) {

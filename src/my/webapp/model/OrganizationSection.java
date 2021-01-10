@@ -26,6 +26,8 @@ public class OrganizationSection extends Section {
         return this.organizations;
     }
 
+    public void addOrganization(Organization o) { organizations.add(o); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -39,11 +41,18 @@ public class OrganizationSection extends Section {
         return Objects.hash(organizations);
     }
 
+//    @Override
+//    public String toString() {
+//        return organizations.stream()
+//                .collect(StringBuilder::new,
+//                        StringBuilder::append,
+//                        StringBuilder::append).toString();
+//    }
+
     @Override
     public String toString() {
-        return organizations.stream()
-                .collect(StringBuilder::new,
-                        StringBuilder::append,
-                        StringBuilder::append).toString();
+        return "OrganizationSection{" +
+                "organizations=" + organizations +
+                '}';
     }
 }

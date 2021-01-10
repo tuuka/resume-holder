@@ -14,11 +14,8 @@ public class ArrayStorage extends AbstractStorage<Integer> {
     protected final Resume[] storage = new Resume[STORAGE_CAPACITY];
     protected int size = 0;
 
-
     @Override
     protected void doSave(Resume r, Integer key) {
-//        if (isExist(r.getUuid()))
-//            throw new StorageResumeExistsException(r.getUuid());
         if (size < STORAGE_CAPACITY)
             storage[size++] = r;
         else throw new ArrayStorageOverflowException("Storage overflow!");

@@ -11,7 +11,7 @@ import my.webapp.model.*;
 
 import java.io.IOException;
 
-public class MainJacksonExperiments {
+public class JacksonExperiments {
     public static Resume generateResume(){
         Resume r = new Resume("dummy.dummy", "dummy");
         r.setContact(ContactType.MOBILE, "+123456789");
@@ -51,7 +51,7 @@ public class MainJacksonExperiments {
 //                System.out.println("jsonToken = " + jsonToken);
 //        }
 
-        Resume r = MainJacksonExperiments.generateResume();
+        Resume r = JacksonExperiments.generateResume();
 
         ObjectMapper OM = JsonMapper.builder()
                 //For adding type info to output Json

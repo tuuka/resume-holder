@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class DataOutputStreamExperiments {
     public static void main(String[] args) {
-        Resume r = MainJacksonExperiments.generateResume();
+        Resume r = JacksonExperiments.generateResume();
 
         DataStreamSerializerEnhanced dss = new DataStreamSerializerEnhanced();
         try (OutputStream os = new FileOutputStream(new File("D:\\temp\\r.dat"))){

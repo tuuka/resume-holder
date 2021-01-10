@@ -6,8 +6,9 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 
-public class MainFiles {
+public class FilesExperiments {
     public static void main(String[] args) {
         File file = new File(".\\.gitignore");
         try (BufferedReader br = new BufferedReader(new FileReader(file))){
@@ -58,7 +59,7 @@ public class MainFiles {
         System.out.println("---------------------------------------------");
         File my_file = new File("D:/projects/java/javaops/my_basejava1/src/my");
 
-        MainFiles.getDirContent(my_file, 0);
+        FilesExperiments.getDirContent(my_file, 0);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ByteArrayInputStream bios = new ByteArrayInputStream(new byte[0]);
@@ -67,8 +68,8 @@ public class MainFiles {
 
     public static void getDirContent(File file, int tab){
             System.out.println("\t".repeat(tab) + file.getAbsolutePath());
-            for (File f : file.listFiles()) {
-                if (f.isDirectory()) MainFiles.getDirContent(f, tab+1);
+            for (File f : Objects.requireNonNull(file.listFiles())) {
+                if (f.isDirectory()) FilesExperiments.getDirContent(f, tab+1);
                     else {
                         System.out.println("\t" + "\t".repeat(tab) + f.getName());
 

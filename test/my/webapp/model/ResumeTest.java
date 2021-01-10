@@ -14,7 +14,6 @@ public class ResumeTest {
     public static final String R2Uuid;
     public static final String R3Uuid;
 
-
     static {
         R2Uuid = "b";
         R3Uuid = "c";
@@ -48,7 +47,6 @@ public class ResumeTest {
         assertEquals(R2Uuid, R2.getUuid());
         assertEquals(R3Uuid, R3.getUuid());
         assertEquals("d", R4.getUuid());
-
     }
 
     @Test
@@ -58,10 +56,10 @@ public class ResumeTest {
     }
 
     @Test
-    public void testDummyResume(){
+    public void testDummyResume() {
         assertEquals("+123456789", R1.getContact(ContactType.MOBILE));
         assertEquals("+987654321", R1.getContact(ContactType.PHONE));
-        assertEquals(DateUtil.parse("01/2002"), ((OrganizationSection)R1
+        assertEquals(DateUtil.parse("01/2002"), ((OrganizationSection) R1
                 .getSection(SectionType.EXPERIENCE)).getOrganizations().get(0)
                 .getPositions().get(1).getEndDate());
 

@@ -63,20 +63,10 @@ public class Organization implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("\n\t\t\t'%s'" +
-                        "\n\t\t\t\tcontacts:%s\n\t\t\t\tpositions:%s",
-                homePage.getName(), homePage.getUrl(),
-//                contacts.keySet().stream()
-//                        .collect(StringBuilder::new,
-//                            (sb,item)-> sb.append("\n\t\t\t\t\t")
-//                                .append(item.returnContact(contacts.get(item))),
-//                            StringBuilder::append).toString(),
-                positions.stream()
-                        .collect(StringBuilder::new,
-                                (sb, item) -> sb.append("\n\t\t\t\t\t")
-                                .append(item),
-                                StringBuilder::append).toString()
-        );
+        return "Organization{" +
+                "homePage=" + homePage +
+                ", positions=" + positions +
+                '}';
     }
 
     @Override
@@ -146,8 +136,8 @@ public class Organization implements Serializable {
             Objects.requireNonNull(endDate, "Finish Date must not be null!");
             Objects.requireNonNull(title, "Position title must not be null!");
             this.title = title;
-            this.startDate = startDate;
-            this.endDate = endDate;
+            this.startDate = startDate.withDayOfMonth(1);
+            this.endDate = endDate.withDayOfMonth(1);
             this.description = description == null ? "" : description;
         }
 
