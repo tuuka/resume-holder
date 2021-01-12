@@ -161,13 +161,13 @@ public class Resume implements Comparable<Resume>, Serializable {
         List<Organization> lo;
         List<Organization.Position> lp;
         lo = new ArrayList<>();
-        lp = new ArrayList<>();
         for (int o = 0; o < 1+random.nextInt(5); o++){
             LocalDate ld  = LocalDate.ofYearDay(1990+random.nextInt(20), random.nextInt(364)+1);
+            lp = new ArrayList<>();
             for (int p = 0; p < 1+random.nextInt(3); p++)
                 lp.add(new Organization.Position(
-                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o)*10),
-                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o)*20),
+                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o)*120),
+                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o+1)*120),
                         String.format("Position%d at %sOrganization%d%d", p, s, i, o),
                         String.format("PosDescr%d at %sOrganization%d%d", p, s, i, o)));
 

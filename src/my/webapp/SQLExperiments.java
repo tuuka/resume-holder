@@ -15,11 +15,12 @@ public class SQLExperiments {
         PostgresStorage ps = new PostgresStorage(Config.get().getDBUrl(),
                 Config.get().getDBUser(), Config.get().getDBPassword());
         ps.clear();
-        resumes.forEach(ps::save);
-        Resume r1 = ps.get("uuid3");
-        System.out.println(r1.equals(resumes.get(3)));
-        ps.delete("uuid3");
-        ps.delete("uuid3");
+        ps.save(new Resume("111", "222"));
+//        resumes.forEach(ps::save);
+////        System.out.println(resumes.get(0));
+//        Resume r1 = ps.get("uuid3");
+//        System.out.println(r1.equals(resumes.get(3)));
+
 //        System.out.println(resumes.get(5).getSection(SectionType.EXPERIENCE).equals(r1.getSection(SectionType.EXPERIENCE)));
 //        System.out.println(resumes.get(5).getSection(SectionType.EDUCATION).equals(r1.getSection(SectionType.EDUCATION)));
 //        System.out.println(resumes.get(5).getSection(SectionType.QUALIFICATIONS).equals(r1.getSection(SectionType.QUALIFICATIONS)));

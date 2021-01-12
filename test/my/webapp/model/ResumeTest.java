@@ -18,7 +18,7 @@ public class ResumeTest {
         R2Uuid = "b";
         R3Uuid = "c";
 
-        R1 = new Resume("dummy.dummy", "dummy");
+        R1 = new Resume("dummyuuid", "dummy");
         R1.setContact(ContactType.MOBILE, "+123456789");
         R1.setContact(ContactType.PHONE, "+987654321");
         Organization.Position p1 = new Organization.Position("11/2000", "12/2000", "worker1", "dummy worker 1");

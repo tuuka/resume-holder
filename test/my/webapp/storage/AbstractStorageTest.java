@@ -155,7 +155,7 @@ public abstract class AbstractStorageTest {
         storage.save(R2);
         storage.save(R3);
         Resume[] array = storage.getAllToPosition(2);
-        assertEquals(array.length, 2);
+        assertEquals(2, array.length);
     }
 
     @AfterEach
