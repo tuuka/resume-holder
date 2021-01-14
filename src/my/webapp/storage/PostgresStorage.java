@@ -1,6 +1,7 @@
 package my.webapp.storage;
 
 import my.webapp.exception.StorageException;
+import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.*;
 import my.webapp.util.DateUtil;
 
@@ -103,8 +104,8 @@ public class PostgresStorage implements Storage {
         StringBuilder queryBuilder = new StringBuilder(
                 "WITH\n" +
                         "resume_ins AS (\n" +
-                        "\tINSERT INTO RESUME (uuid, full_name) VALUES (?, ?)\n" +
-                        "\tRETURNING *)"
+                        "INSERT INTO RESUME (uuid, full_name) VALUES (?, ?)\n" +
+                        "RETURNING *)"
         );
         parameters.add(resume.getUuid());
         parameters.add(resume.getFullName());
@@ -232,19 +233,19 @@ public class PostgresStorage implements Storage {
         queryBuilder.append(
                 "SELECT uuid FROM resume_ins"
         );
-        connectAndExecuteQuery(conn -> {
-                    PreparedStatement statement = conn.prepareStatement(
-                            queryBuilder.toString(), Statement.RETURN_GENERATED_KEYS);
-                    for (int i = 0; i < parameters.size(); i++)
-                        statement.setString(i + 1, parameters.get(i));
-                    ResultSet rs = statement.executeQuery();
-                    rs.next();
-                    String savedUuid = rs.getString(1);
-                    if (!resume.getUuid().equals(savedUuid))
-                        throw new StorageException("Error when saving resume uuid = " + resume.getUuid());
-                    return rs;
-                }
-        );
+        execute(statement -> {
+            for (int i = 0; i < parameters.size(); i++)
+                statement.setString(i + 1, parameters.get(i));
+            ResultSet rs = statement.executeQuery();
+            if (!rs.next()) {
+                LOGGER.warning("Error when saving resume uuid = "
+                        + resume.getUuid());
+                throw new StorageException(
+                        "Error when saving resume uuid = "
+                                + resume.getUuid());
+            }
+            return null;
+        }, queryBuilder.toString());
     }
 
     @Override
@@ -255,82 +256,99 @@ public class PostgresStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        List<Map<String, Object>> mapList =
-                selectWhereFieldEqualsArg(
-                        "SELECT * FROM resume WHERE", "uuid", uuid);
-        if (mapList.size() == 0)
-            throw new StorageException("Can not read resume with uuid=" + uuid);
-        Resume r = new Resume((String) mapList.get(0).get("uuid"),
-                (String) mapList.get(0).get("full_name"));
+        Resume r =
+                execute(statement -> {
+                            statement.setString(1, uuid);
+                            ResultSet rs = statement.executeQuery();
+                            if (!rs.next()) {
+                                LOGGER.warning("Error when getting resume uuid = "
+                                        + uuid);
+                                throw new StorageResumeNotFoundException(
+                                        "Error when getting resume uuid = "
+                                                + uuid);
+                            }
+                            return new Resume(uuid, rs.getString("full_name"));
+                        },
+                        "SELECT * FROM resume WHERE uuid=?");
+
         /* getting contacts */
-        mapList = selectWhereFieldEqualsArg(
+        execute(statement -> {
+                    statement.setString(1, uuid);
+                    ResultSet rs = statement.executeQuery();
+                    while (rs.next()) {
+                        r.setContact(ContactType.valueOf(
+                                rs.getString("cont_type")),
+                                rs.getString("cont_value"));
+                    }
+                    return null;
+                },
                 "SELECT cont_type, cont_value " +
                         "FROM resume " +
                         "RIGHT JOIN contact c on resume.uuid = c.resume_uuid " +
-                        "WHERE", "resume.uuid", uuid);
-        mapList.forEach(contact -> r.setContact(
-                ContactType.valueOf((String) contact.get("cont_type")),
-                (String) contact.get("cont_value")));
+                        "WHERE resume.uuid=?");
+
         /* getting sections */
-        mapList = selectWhereFieldEqualsArg(
-                "select sec_type " +
-                        ",texts_value " +
-                        ",org_title, org_url " +
-                        ",pos_title, pos_description,start_date, end_date " +
-                        "from resume " +
-                        "right join section on resume.uuid = section.resume_uuid " +
-                        "left join organization on section.sec_id = organization.section_id " +
-                        "left join position on organization.org_id = position.organization_id " +
-                        "left join texts on section.sec_id = texts.section_id " +
-                        "where", "resume.uuid", uuid
-        );
-        mapList.forEach(row -> {
-            SectionType sec_type = SectionType.valueOf(
-                    (String) row.get("sec_type"));
-            switch (sec_type) {
-                case PERSONAL:
-                case OBJECTIVE:
-                    r.setSection(sec_type,
-                            new TextSection((String) row.get("texts_value")));
-                    break;
-                case ACHIEVEMENT:
-                case QUALIFICATIONS:
-                    ListSection list_sec = Optional.ofNullable(
-                            (ListSection) r.getSection(sec_type))
-                            .orElseGet(() -> {
-                                r.setSection(sec_type, new ListSection(new ArrayList<>()));
-                                return (ListSection) r.getSection(sec_type);
-                            });
-                    list_sec.addItem((String) row.get("texts_value"));
-                    break;
-                case EXPERIENCE:
-                case EDUCATION:
-                    OrganizationSection org_sec = Optional.ofNullable(
-                            (OrganizationSection) r.getSection(sec_type))
-                            .orElseGet(() -> {
-                                r.setSection(sec_type, new OrganizationSection(new ArrayList<>()));
-                                return (OrganizationSection) r.getSection(sec_type);
-                            });
-                    String org_title = (String) row.get("org_title");
-                    String org_url = (String) row.get("org_url");
-                    Organization organization = org_sec.getOrganizations()
-                            .stream()
-                            .filter(o ->
-                                    o.getHomePage().getName().equals(org_title) &&
-                                            o.getHomePage().getUrl().equals(org_url))
-                            .findFirst()
-                            .orElseGet(() -> {
-                                Organization o = new Organization(org_title, org_url);
-                                org_sec.addOrganization(o);
-                                return o;
-                            });
-                    organization.addPosition(
-                            (String) row.get("start_date"),
-                            (String) row.get("end_date"),
-                            (String) row.get("pos_title"),
-                            (String) row.get("pos_description"));
+        execute(statement -> {
+            statement.setString(1, uuid);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                SectionType sec_type = SectionType.valueOf(
+                        rs.getString("sec_type"));
+                switch (sec_type) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        r.setSection(sec_type,
+                                new TextSection(rs.getString("texts_value")));
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        ListSection list_sec = Optional.ofNullable(
+                                (ListSection) r.getSection(sec_type))
+                                .orElseGet(() -> {
+                                    ListSection ls = new ListSection(new ArrayList<>());
+                                    r.setSection(sec_type, ls);
+                                    return ls;
+                                });
+                        list_sec.addItem(rs.getString("texts_value"));
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        OrganizationSection org_sec = Optional.ofNullable(
+                                (OrganizationSection) r.getSection(sec_type))
+                                .orElseGet(() -> {
+                                    OrganizationSection os = new OrganizationSection(new ArrayList<>());
+                                    r.setSection(sec_type, os);
+                                    return os;
+                                });
+                        String org_title = rs.getString("org_title");
+                        String org_url = rs.getString("org_url");
+                        Organization organization = org_sec.getOrganizations()
+                                .stream()
+                                .filter(o ->
+                                        o.getHomePage().getName().equals(org_title) &&
+                                                o.getHomePage().getUrl().equals(org_url))
+                                .findFirst()
+                                .orElseGet(() -> {
+                                    Organization o = new Organization(org_title, org_url);
+                                    org_sec.addOrganization(o);
+                                    return o;
+                                });
+                        organization.addPosition(
+                                rs.getString("start_date"),
+                                rs.getString("end_date"),
+                                rs.getString("pos_title"),
+                                rs.getString("pos_description"));
+                }
             }
-        });
+            return null;
+        }, "SELECT sec_type ,texts_value, org_title, org_url " +
+                ",pos_title, pos_description,start_date, end_date " +
+                "FROM resume " +
+                "RIGHT JOIN section on resume.uuid = section.resume_uuid " +
+                "LEFT JOIN organization on section.sec_id = organization.section_id " +
+                "LEFT JOIN position on organization.org_id = position.organization_id " +
+                "LEFT JOIN texts on section.sec_id = texts.section_id " +
+                "WHERE resume.uuid=?");
         r.sort();
         return r;
     }
@@ -338,46 +356,42 @@ public class PostgresStorage implements Storage {
     @Override
     public void delete(String uuid) {
         LOGGER.info("Deleting resume uuid =" + uuid);
-        connectAndExecuteUpdate(conn -> {
-            PreparedStatement statement = conn.prepareStatement(
-                    "DELETE FROM resume WHERE resume.uuid=?");
+        execute(statement -> {
             statement.setString(1, uuid);
-            if (statement.executeUpdate() == 0)
-                throw new StorageException("Can't delete resume uuid=" + uuid);
-        });
+            if (statement.executeUpdate() == 0) {
+                LOGGER.warning("Can't delete resume uuid=" + uuid);
+                throw new StorageResumeNotFoundException(
+                        "Can't delete resume uuid=" + uuid);
+            }
+            return null;
+        }, "DELETE FROM resume WHERE resume.uuid=?");
     }
 
     @Override
     public int size() {
-        return connectAndExecuteQuery(conn -> {
-            PreparedStatement statement = conn
-                    .prepareStatement("SELECT * FROM resume");
-            return statement.executeQuery();
-        }).size();
+        return execute(statement -> {
+                    ResultSet rs = statement.executeQuery();
+                    return rs.next() ? rs.getInt(1) : 0;
+                },
+                "SELECT count(*) FROM resume");
     }
 
     @Override
     public void clear() {
         LOGGER.info("Clearing all resumes.");
-        connectAndExecuteUpdate(conn -> {
-            PreparedStatement statement = conn.prepareStatement(
-                    "DELETE FROM resume");
-            statement.execute();
-        });
+        execute(PreparedStatement::execute, "DELETE FROM resume");
     }
 
     @Override
     public Resume[] getAll() {
-        List<Map<String, Object>> rMapList = connectAndExecuteQuery(conn -> {
-            PreparedStatement statement = conn
-                    .prepareStatement("SELECT * FROM resume");
-            return statement.executeQuery();
-        });
-        List<Resume> resumes = new ArrayList<>();
-        for (Map<String, Object> rMap : rMapList) {
-            resumes.add(this.get((String) rMap.get("uuid")));
-        }
-        return resumes.toArray(new Resume[0]);
+        return execute(statement -> {
+            ResultSet rs = statement.executeQuery();
+            List<Resume> resumes = new ArrayList<>();
+            while (rs.next()) {
+                resumes.add(get(rs.getString("uuid")));
+            }
+            return resumes.toArray(new Resume[0]);
+        }, "SELECT uuid FROM resume");
     }
 
     @Override
@@ -386,49 +400,32 @@ public class PostgresStorage implements Storage {
         return Arrays.copyOfRange(getAll(), 0, pos);
     }
 
-    private void connectAndExecuteUpdate(executeUpdateFunction<Connection> func) {
-        try (Connection conn = connectionFactory.getConnection()) {
-            func.apply(conn);
+    private <T> T execute(
+            executeFunction<T> func,
+            String sql) {
+        try (Connection conn = connectionFactory.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            return func.apply(statement);
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new StorageException(e.getMessage(), e);
         }
     }
 
-    private List<Map<String, Object>> connectAndExecuteQuery(
-            executeQueryFunction<Connection, ResultSet> func) {
-        List<Map<String, Object>> results = new ArrayList<>();
-        try (Connection conn = connectionFactory.getConnection()) {
-            ResultSet rs = func.apply(conn);
-            if (rs != null) {
-                ResultSetMetaData meta = rs.getMetaData();
-                int numColumns = meta.getColumnCount();
-                while (rs.next()) {
-                    Map<String, Object> row = new HashMap<>();
-                    for (int i = 1; i <= numColumns; ++i) {
-                        String name = meta.getColumnName(i);
-                        row.put(name, rs.getObject(i));
-                    }
-                    results.add(row);
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, e.getMessage(), e);
-            throw new StorageException(e.getMessage(), e);
-        }
-        return results;
-    }
-
-    private List<Map<String, Object>> selectWhereFieldEqualsArg(String sql,
-                                                                String field,
-                                                                String arg) {
-        return connectAndExecuteQuery(conn -> {
-            PreparedStatement statement = conn
-                    .prepareStatement(sql + " " + field + "=?");
-            statement.setString(1, arg);
-            return statement.executeQuery();
-        });
-    }
+//    private List<Map<String, String>> convertRsIntoListOfMap(ResultSet rs) throws SQLException {
+//        List<Map<String, String>> results = new ArrayList<>();
+//        ResultSetMetaData meta = rs.getMetaData();
+//        int numColumns = meta.getColumnCount();
+//        while (rs.next()) {
+//            Map<String, String> row = new HashMap<>();
+//            for (int i = 1; i <= numColumns; ++i) {
+//                row.put(meta.getColumnName(i),
+//                        rs.getString(i));
+//            }
+//            results.add(row);
+//        }
+//        return results;
+//    }
 
     private void addToBuilder(StringBuilder sb,
                               String InitString,
@@ -438,11 +435,8 @@ public class PostgresStorage implements Storage {
         sb.append(params);
     }
 
-    private interface executeUpdateFunction<T> {
-        void apply(T t) throws SQLException;
-    }
-
-    private interface executeQueryFunction<T, R> {
-        R apply(T t) throws SQLException;
+    private interface executeFunction<R> {
+        R apply(java.sql.PreparedStatement statement)
+                throws SQLException;
     }
 }
