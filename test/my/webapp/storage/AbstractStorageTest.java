@@ -25,12 +25,12 @@ public abstract class AbstractStorageTest {
     protected static Level loggerLevel;
 
     protected Storage storage;
-    protected final int CAPACITY = ArrayStorage.STORAGE_CAPACITY;
-    protected List<Resume> resumes;
+    protected static final int CAPACITY = ArrayStorage.STORAGE_CAPACITY;
+    protected static final List<Resume> resumes =
+            Resume.generateNFakeResumes(CAPACITY);
 
     public AbstractStorageTest(Storage storage) {
         this.storage = storage;
-        resumes = Resume.generateNFakeResumes(CAPACITY);
     }
 
     @BeforeEach

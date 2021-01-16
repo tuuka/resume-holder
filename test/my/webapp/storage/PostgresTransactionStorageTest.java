@@ -2,10 +2,10 @@ package my.webapp.storage;
 
 import my.webapp.Config;
 
-public class SQLStorageTest extends AbstractStorageTest {
+public class PostgresTransactionStorageTest extends AbstractStorageTest {
 
-    public SQLStorageTest() {
-        super(new PostgresStorage(
+    public PostgresTransactionStorageTest() {
+        super(new PostgresTransactionalStorage(
                 Config.get().getDBUrl(),
                 Config.get().getDBUser(),
                 Config.get().getDBPassword()));
