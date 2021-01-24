@@ -12,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+/* Реализация SQL Postgres Storage посредством групировки простых запросов
+в транзакции*/
+
 public class PostgresTransactionalStorage implements Storage {
 
     protected final SQLHelper helper;
@@ -23,8 +26,15 @@ public class PostgresTransactionalStorage implements Storage {
     }
 
     public PostgresTransactionalStorage(String DBUrl, String user, String password) {
-        helper = new SQLHelper(() -> DriverManager
-                .getConnection(DBUrl, user, password), LOGGER);
+        helper = new SQLHelper(() -> {
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException e) {
+                throw new SQLException("Can't find JDBC Driver", e);
+            }
+            return DriverManager
+                .getConnection(DBUrl, user, password);
+            }, LOGGER);
     }
 
     @Override

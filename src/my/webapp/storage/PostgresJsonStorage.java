@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 
+/* Реализация SQL Postgres Storage в глубоко упрощеном виде, когда секции и
+* контакты преобразоуются в Json-cтроку, которая и сохраняется в таблице БД.*/
+
 public class PostgresJsonStorage implements Storage {
 
     private final SQLHelper helper;

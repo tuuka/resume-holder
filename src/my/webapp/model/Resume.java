@@ -125,8 +125,25 @@ public class Resume implements Comparable<Resume>, Serializable {
         List<String> ls;
         for (int i = 0; i < n; i++){
             Resume r = new Resume(String.format("uuid%d", i), String.format("name%d", i));
-            for (ContactType ct : ContactType.values())
-                r.setContact(ct, String.format("+%d", random.nextInt(1000000000)));
+            for (ContactType ct : ContactType.values()){
+                switch (ct) {
+                    case MOBILE:
+                    case PHONE:
+                        r.setContact(ct, String.format("+%d", random.nextInt(1000000000)));
+                        break;
+                    case SKYPE:
+                        r.setContact(ct, String.format("name%d", random.nextInt(1000)));
+                        break;
+                    case MAIL:
+                        r.setContact(ct, String.format("name%d@gmail.com", i));
+                        break;
+                    case GITHUB:
+                        r.setContact(ct, String.format("www.github.com/name%d", i));
+                        break;
+                    case HOME_PAGE:
+                        r.setContact(ct, String.format("www.name%d.com", i));
+                        break;
+                }}
             for (SectionType st : SectionType.values())
                 switch (st){
                     case PERSONAL:

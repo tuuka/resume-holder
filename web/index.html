@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume holder</title>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+<header>
+    <menu>
+        <ul class="menu">
+            <li class="menu__item active">Список</li>
+            <li class="menu__item">Добавить</li>
+            <li class="menu__item">Найти</li>
+            <li class="menu__item">Удалить</li>
+        </ul>
+    </menu>
+</header>
+<main>
+    <section class="container">
+        <ul class="resume-list">
+            <li class="resume-list__item">
+                <div class="resume-list__content">
+                    <div class="resume-list__item_name resume-list_column-title">Full name</div>
+                    <div class="resume-list__item_uuid resume-list_column-title">UUID</div>
+                </div>
+                <div class="resume-list__item_actions resume-list_column-title">
+                    Actions
+                </div>
+            </li>
+            <li class="resume-list__item">
+                <div class="resume-list__content">
+                    <a class="resume-list__item_name" href="#">Platonov Pavel Ivanovitch</a>
+                    <a class="resume-list__item_uuid" href="#">1234-5678-794-5621</a>
+                </div>
+                <div class="resume-list__item_actions">
+                    <a href="#">
+                        <img src="img/pencil.png" alt="Edit">
+                    </a>
+                    <a href="#">
+                        <img src="img/delete.png" alt="Delete">
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </section>
+    <section class="container resume-view">
+        <div class="resume-view__name">
+            <span class="title">Full name: </span>
+            Pupkin Vasilij Petrovitch
+        </div>
+        <div class="resume-view__uuid">
+            <span class="title">uuid: </span>1234-5678-7945-5621
+            <a class="resume-view__edit-button">Edit resume</a>
+        </div>
+        <div class="resume-view__contacts">
+            <p>
+                <span class="title">mobile: </span>+1234567989
+            </p>
+            <p>
+                <span class="title">skype: </span>pupkin
+            </p>
+            <p>
+                <span class="title">e-mail: </span>pupkin@gmail.com
+            </p>
+        </div>
+        <ul class="resume-view__sections">
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">objective</div>
+                <div class="resume-view__section_text">Experienced digger</div>
+            </li>
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">personal</div>
+                <div class="resume-view__section_text">
+                    Very responsible employee, pleasant communicative person
+                </div>
+            </li>
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">qualifications</div>
+                <ul class="resume-view__section_list">
+                    <li class="resume-view__section_text">Can dig.</li>
+                    <li class="resume-view__section_text">Can eat.</li>
+                    <li class="resume-view__section_text">Can sleep.</li>
+                </ul>
+            </li>
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">achievement</div>
+                <ul class="resume-view__sections-item_list">
+                    <li class="resume-view__section_text">Won 'Best digger' world cup.</li>
+                    <li class="resume-view__section_text">Can dig staying on the head.</li>
+                    <li class="resume-view__section_text">Rubbed 10 shovels to the dust.</li>
+                </ul>
+            </li>
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">experience</div>
+                <ul class="resume-view__section_org-list">
+                    <li class="resume-view__section_org">
+                        <div class="resume-view__org-name">JSC 'Dig or die'
+                            <a class="resume-view__org-link" href="http://www.digordie.com">site</a>
+                        </div>
+                        <ul class="resume-view__positions-list">
+                            <li class="resume-view__position">From 03/2001 to 01/2002 Diggers' foreman.</li>
+                            <li class="resume-view__position">From 02/2002 to 02/2003 Operator of digger machine.
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="resume-view__section_org">
+                        <div class="resume-view__org-name">LLC 'The shovel and the pick'
+                            <a class="resume-view__org-link" href="http://www.theshovelandthepick.com">site</a>
+                        </div>
+                        <ul class="resume-view__positions-list">
+                            <li class="resume-view__position">From 01/1999 to 01/2000 Junior assistant of senior
+                                groundsman.
+                            </li>
+                            <li class="resume-view__position">From 02/2000 to 02/2001 Middle groundsman.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="resume-view__sections-item">
+                <div class="resume-view__section_title">education</div>
+                <ul class="resume-view__section_org-list">
+                    <li class="resume-view__section_org">
+                        <div class="resume-view__org-name">National college of digging.
+                            <a class="resume-view__org-link" href="http://www.collegeofdigging.com">site</a>
+                        </div>
+                        <ul class="resume-view__positions-list">
+                            <li class="resume-view__position">From 09/1994 to 05/1998 Student of the 'Deepest and
+                                fastest digging' faculty.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section class="container resume-edit">
+        <div class="resume-edit__form">
+            <div class="resume-edit__name">
+                <div class="title">Full name:</div>
+                <input type="text" class="resume-edit__input"
+                       name="full_name" required placeholder="Pupkin Vasilij Petrovitch" />
+            </div>
+            <div class="resume-edit__uuid">
+                <div class="title">uuid:</div>
+                <input type="text" class="resume-edit__input"
+                       name="uuid" required placeholder="1234-5678-7945-5621" />
+            </div>
+            <ul class="resume-edit__contacts">
+                <li>
+                    <div class="title">mobile:</div>
+                    <input type="tel" class="resume-edit__input"
+                           name="mobile" placeholder="+1234567989" />
+                </li>
+                <li>
+                    <div class="title">skype:</div>
+                    <input type="text" class="resume-edit__input"
+                           name="skype" placeholder="pupkin" />
+                </li>
+                <li>
+                    <div class="title">e-mail:</div>
+                    <input type="email" class="resume-edit__input"
+                           name="mail" placeholder="pupkin@gmail.com" />
+                </li>
+            </ul>
+            <ul class="resume-edit__sections">
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">objective</div>
+                    <div class="resume-edit__section_text">
+                        <input type="text" class="resume-edit__input"
+                               name="objective" placeholder="Experienced digger"/>
+                    </div>
+                </li>
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">personal</div>
+                    <div class="resume-edit__section_text">
+                        <input type="text" class="resume-edit__input"
+                               name="personal" placeholder="Very responsible employee, pleasant communicative person"/>
+                    </div>
+                </li>
+
+
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">qualifications
+                        <span class="resume-edit__add-icon">
+                            <img src="img/add.png" alt=""></span>
+<!--                        <a class="resume-edit__add-button">Add qualification</a>-->
+                    </div>
+                    <ul class="resume-edit__section_list">
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="qualifications" placeholder="Can dig."/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="qualifications" placeholder="Can eat."/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="qualifications" placeholder="Can sleep."/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                    </ul>
+                </li>
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">achievement
+                        <span class="resume-edit__add-icon">
+                            <img src="img/add.png" alt=""></span>
+<!--                        <a class="resume-edit__add-button">Add achievement</a>-->
+                    </div>
+                    <ul class="resume-edit__section_list">
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="achievement" placeholder="Won 'Best digger' world cup."/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="achievement" placeholder="Can dig staying on the head"/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                        <li class="resume-edit__section_text">
+                            <input type="text" class="resume-edit__input"
+                                   name="achievement" placeholder="Rubbed 10 shovels to the dust."/>
+                            <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                        </li>
+                    </ul>
+                </li>
+
+
+
+
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">experience
+                        <span class="resume-edit__add-icon">
+                            <img src="img/add.png" alt=""></span>
+<!--                        <a class="resume-edit__add-button">Add experience</a>-->
+                    </div>
+                    <ul class="resume-edit__section_org-list">
+                        <li class="resume-edit__section_org">
+                            <div class="resume-edit__org-name">
+                                <p>Org title:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_name" placeholder="JSC 'Dig or die'"/>
+                                <p>url:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_url" placeholder="http://www.digordie.com"/>
+                                <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                <span class="resume-edit__add-icon">
+                                    <img src="img/add.png" alt=""></span>
+                            </div>
+                            <ul class="resume-edit__positions-list">
+                                <li class="resume-edit__position">
+                                    <p>from:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_from" placeholder="03/2001"/>
+                                    <p>to:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_to" placeholder="01/2002"/>
+                                    <p>position:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_title" placeholder="Diggers' foreman."/>
+                                    <p>desc:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_desc" placeholder="Diggers' foreman."/>
+                                    <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                </li>
+                                <li class="resume-edit__position">
+                                    <p>from:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_from" placeholder="02/2002"/>
+                                    <p>to:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_to" placeholder="02/2003"/>
+                                    <p>position:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_title" placeholder="Operator of digger machine."/>
+                                    <p>desc:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_desc" placeholder="Operator of digger machine."/>
+                                    <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="resume-edit__section_org">
+                            <div class="resume-edit__org-name">
+                                <p>Org title:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_name" placeholder="LLC 'The shovel and the pick"/>
+                                <p>url:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_url" placeholder="http://www.shovelandthepick.com"/>
+                                <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                <span class="resume-edit__add-icon">
+                                    <img src="img/add.png" alt=""></span>
+                            </div>
+                            <ul class="resume-edit__positions-list">
+                                <li class="resume-edit__position">
+                                    <p>from:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_from" placeholder="01/1999"/>
+                                    <p>to:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_to" placeholder="01/2000"/>
+                                    <p>position:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_title" placeholder="Junior assistant of senior groundsman."/>
+                                    <p>desc:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_desc" placeholder="Junior assistant."/>
+                                    <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                </li>
+                                <li class="resume-edit__position">
+                                    <p>from:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_from" placeholder="02/2000"/>
+                                    <p>to:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_to" placeholder="02/2001"/>
+                                    <p>position:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_title" placeholder="Middle groundsman."/>
+                                    <p>desc:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_desc" placeholder="Middle groundsman."/>
+                                    <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="resume-edit__sections-item">
+                    <div class="resume-edit__section_title">education
+                        <span class="resume-edit__add-icon">
+                            <img src="img/add.png" alt=""></span>
+                        <!--                        <a class="resume-edit__add-button">Add experience</a>-->
+                    </div>
+                    <ul class="resume-edit__section_org-list">
+                        <li class="resume-edit__section_org">
+                            <div class="resume-edit__org-name">
+                                <p>Org title:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_name" placeholder="National college of digging."/>
+                                <p>url:</p>
+                                <input type="text" class="resume-edit__input"
+                                       name="org_url" placeholder="http://www.collegeofdigging.com"/>
+                                <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                <span class="resume-edit__add-icon">
+                                    <img src="img/add.png" alt=""></span>
+                            </div>
+                            <ul class="resume-edit__positions-list">
+                                <li class="resume-edit__position">
+                                    <p>from:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_from" placeholder="09/1994"/>
+                                    <p>to:</p>
+                                    <input type="text" class="resume-edit__input-date"
+                                           name="position_to" placeholder="05/1998"/>
+                                    <p>position:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_title" placeholder="Student of the 'Deepest and fastest digging' faculty."/>
+                                    <p>desc:</p>
+                                    <input type="text" class="resume-edit__input"
+                                           name="position_desc" placeholder="Student."/>
+                                    <span class="resume-edit__delete-icon"><img src="img/delete.png" alt=""></span>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </section>
+</main>
+</body>
+</html>

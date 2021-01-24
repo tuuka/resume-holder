@@ -1,0 +1,251 @@
+html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+
+}
+*, *:before, *:after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+    margin-block-start:0;
+    margin-block-end:0;
+    margin-inline-start:0;
+    margin-inline-end:0;
+    padding-block-start:0;
+    padding-block-end:0;
+    padding-inline-start:0;
+    padding-inline-end:0;
+    list-style-type: none;
+}
+
+body {
+    font-family: Roboto, serif;
+    font-size: 16px;
+    background-color: #FFFFFF;
+}
+
+a {
+    text-decoration: none;
+}
+
+/*img {*/
+/*    vertical-align: middle;*/
+/*}*/
+
+.menu {
+    display: flex;
+    width: 100%;
+    height: 2.6rem;
+    background-color: #212529;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.menu .menu__item {
+    margin-left: 1rem;
+    color: white;
+    align-self: center;
+}
+
+.menu .menu__item:hover {
+    cursor: pointer;
+}
+
+.menu__item.active{
+    color: cornflowerblue;
+    /*text-decoration: underline;*/
+}
+
+.container {
+    padding: 1em;
+    max-width: 767px;
+    margin: 0 auto;
+    font-size: 1.2em;
+}
+
+.disabled {
+    display: none !important;
+}
+
+.resume-list__item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 1.7em;
+    align-items: center;
+    padding: 0 0.2em;
+}
+
+.resume-list__item:first-child {
+    font-weight: 600;
+}
+
+.resume-list__item:nth-child(odd) {
+    background-color: #BBBBBB;
+}
+
+.resume-list__item:nth-child(even) {
+    background-color: #DDDDDD;
+}
+
+.resume-list__item.title {
+    background-color: #222222 !important;
+    color: white !important;
+}
+
+.resume-list_column-title {
+    text-align: center !important;
+}
+
+.resume-list__content {
+    display: flex;
+    width: 80%;
+}
+
+.resume-list__item_name {
+    width: 60%;
+    padding: 0 1em;
+}
+
+.resume-list__item_uuid {
+    display: block;
+    position: relative;
+    width: 40%;
+    padding: 0 1em;
+}
+
+.resume-list__item_uuid:before{
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background-color: white;
+}
+
+.resume-list__item_uuid:after{
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background-color: white;
+}
+
+.resume-list__item_actions {
+    width: 20%;
+    padding: 0 1em;
+    text-align: center;
+}
+
+.resume-list__item_actions a {
+    margin: 0 0.2em;
+}
+
+.title {
+    font-weight: 600;
+    font-style: initial;
+    display: inline-block;
+    width: 5.5em;
+    text-align: right;
+    padding-right: 0.4em;
+}
+
+.resume-view__name {
+    font-size: 2.0em;
+    margin-bottom: 0.5em;
+    font-style: italic;
+}
+
+.resume-edit__name {
+    margin-bottom: 0.5em;
+}
+
+.resume-view__uuid,.resume-edit__uuid {
+    margin-bottom: 0.5em;
+}
+
+.resume-view__edit-button,.resume-edit__add-button{
+    margin-left: 2em;
+    cursor: pointer;
+    border: solid 1px black;
+    padding: 0 0.2em;
+    background-color: #DDDDDD;
+}
+
+.resume-edit__add-button,.resume-view__edit-button:hover{
+    box-shadow: 0 0 2px;
+}
+
+.resume-edit__add-button,.resume-view__edit-button:active{
+    box-shadow: none;
+}
+
+.resume-view__contacts,.resume-edit__contacts {
+    margin-bottom: 1em;
+}
+
+.resume-view__section_title,.resume-edit__section_title{
+    text-transform: uppercase;
+    border-bottom: dotted black;
+    font-weight: 600;
+    margin: 0.5em 0;
+}
+
+.resume-view__section_text,.resume-edit__section_text,
+.resume-view__org-name,.resume-edit__org-name{
+    margin-left: 1em;
+}
+
+.resume-edit__section_text {
+    display: flex;
+    align-items: end;
+}
+
+.resume-edit__delete-icon,.resume-edit__add-icon {
+    margin-left: 0.5em;
+}
+
+.resume-edit__delete-icon,.resume-edit__add-icon:hover {
+    cursor: pointer;
+}
+
+.resume-view__org-name {
+    font-style: italic;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.resume-edit__org-name {
+    display: flex;
+    margin-bottom: 0.2em;
+}
+
+.resume-edit__org-name *,.resume-edit__position * {
+    /*font-size: 1em;*/
+    /*font-style: inherit;*/
+    margin-right: 0.4em;
+}
+
+.resume-view__org-link,.resume-edit__org-link {
+    margin-left: 1em;
+}
+
+.resume-view__position,.resume-edit__position {
+    margin-left: 2em;
+    font-size: 0.8em;
+}
+
+.resume-edit__position {
+    display: flex;
+    margin-bottom: 0.2em;
+}
+
+.resume-edit__input-date {
+    width: 4em;
+}
+

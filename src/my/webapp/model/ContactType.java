@@ -1,12 +1,22 @@
 package my.webapp.model;
 
 public enum ContactType {
-    PHONE("Тел."),
-    MOBILE("Мобильный"),
-    HOME_PHONE("Домашний тел."),
+    PHONE("Phone"),
+    MOBILE("Mobile"),
     SKYPE("Skype"),
-    MAIL("Почта");
-
+    MAIL("e-mail"),
+    GITHUB("GitHub") {
+        @Override
+        public String toHtml(String value) {
+            return toLink(value, getTitle());
+        }
+    },
+    HOME_PAGE("Home page") {
+        @Override
+        public String toHtml(String value) {
+            return toLink(value, getTitle());
+        }
+    };
     private final String title;
 
     ContactType(String title) {
@@ -17,7 +27,15 @@ public enum ContactType {
         return title;
     }
 
-    public String returnContact(String contact) {
-        return String.format("%-14s: %s", this.getTitle(), contact);
+    public String toHtml(String contact) {
+        return contact==null? "":
+                String.format("<span class=\"title\">%s: </span>%s",
+                        this.getTitle(), contact);
+    }
+
+    private static String toLink(String contact, String title) {
+        return contact==null? "":
+                String.format("<span class=\"title\">%1$s: </span><a href=\"%2$s\">%2$s</a>",
+                title, contact);
     }
 }

@@ -1,15 +1,18 @@
 package my.webapp;
 
-import java.io.FileInputStream;
+import my.webapp.storage.PostgresTransactionalStorage;
+import my.webapp.storage.Storage;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
     private static final Config INSTANCE = new Config();
-    private static final String PROPS_FILE = "./resources/resumes.properties";
+    private static final String PROPS_FILE = "/resumes.properties";
 
     private final String storageDir;
+    private final Storage storage;
     private final int arrayCapacity;
     private final String DBUrl;
     private final String DBUser;
@@ -19,7 +22,8 @@ public class Config {
 
     private Config(){
 //        try(InputStream is = getClass().getClassLoader().getResourceAsStream("resumes.properties")){
-        try(InputStream is = new FileInputStream(PROPS_FILE)){
+//        try(InputStream is = new FileInputStream("/resources/resumes.properties")){
+            try (InputStream is = Config.class.getResourceAsStream(PROPS_FILE)) {
             Properties properties = new Properties();
             properties.load(is);
             storageDir = properties.getProperty("storage.dir");
@@ -28,8 +32,9 @@ public class Config {
             DBUrl = properties.getProperty("db.url");
             DBUser = properties.getProperty("db.user");
             DBPassword = properties.getProperty("db.password");
+            storage = new PostgresTransactionalStorage(DBUrl, DBUser, DBPassword);
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot read properties file!");
+            throw new IllegalStateException("Cannot read properties file!", e);
         }
     }
 
@@ -52,4 +57,6 @@ public class Config {
     public String getDBPassword() {
         return DBPassword;
     }
+
+    public Storage getStorage() { return storage; }
 }

@@ -23,7 +23,7 @@ public class FilesExperiments {
         }
 
         try {
-            Path path = Path.of("D:/projects/java/javaops/my_basejava1");
+            Path path = Path.of("D:/projects/java/javaops/resume_holder");
             Files.walkFileTree(path,
                     new FileVisitor<>() {
                         @Override
@@ -57,7 +57,7 @@ public class FilesExperiments {
 
         /* дерево через File */
         System.out.println("---------------------------------------------");
-        File my_file = new File("D:/projects/java/javaops/my_basejava1/src/my");
+        File my_file = new File("D:/projects/java/javaops/resume_holder/src/my");
 
         FilesExperiments.getDirContent(my_file, 0);
 
