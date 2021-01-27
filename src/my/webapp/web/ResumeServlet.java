@@ -1,5 +1,6 @@
 package my.webapp.web;
 
+import my.webapp.model.Resume;
 import my.webapp.storage.Storage;
 
 import javax.servlet.ServletConfig;
@@ -31,9 +32,32 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
-            request.setAttribute("resumes", storage.getAll());
+            request.setAttribute("resumes", storage.getAllSorted());
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
         }
+
+        Resume r;
+        switch (action) {
+            case "view":
+            case "edit":
+                r = storage.get(uuid);
+                break;
+            case "delete":
+                storage.delete(uuid);
+                response.sendRedirect("");
+                return;
+            case "add":
+                r = new Resume();
+                break;
+            default:
+                throw new IllegalArgumentException("Action " + action + " is illegal!");
+        }
+
+        request.setAttribute("resume", r);
+        request.getRequestDispatcher(
+                "view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp"
+        ).forward(request, response);
+
     }
 }

@@ -11,7 +11,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathStorage extends AbstractStorage<Path> {
@@ -88,7 +90,7 @@ public class PathStorage extends AbstractStorage<Path> {
             Files.delete(path);
         } catch (IOException e) {
             throw new StorageException("Error deleting file " +
-                            path.toAbsolutePath());
+                    path.toAbsolutePath());
         }
     }
 
@@ -114,8 +116,8 @@ public class PathStorage extends AbstractStorage<Path> {
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return getFilesList().map(this::doGet).toArray(Resume[]::new);
+    protected List<Resume> doGetAll() {
+        return getFilesList().map(this::doGet).collect(Collectors.toList());
     }
 
     private Stream<Path> getFilesList() {
@@ -125,5 +127,12 @@ public class PathStorage extends AbstractStorage<Path> {
             throw new StorageException("Error reading directory " +
                     directory.toAbsolutePath(), e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "PathStorage{" +
+                "storage=" + doGetAll() +
+                '}';
     }
 }

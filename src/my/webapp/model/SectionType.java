@@ -1,12 +1,42 @@
 package my.webapp.model;
 
 public enum SectionType {
-    PERSONAL("Личные качества"),
-    OBJECTIVE("Позиция"),
-    ACHIEVEMENT("Достижения"),
-    QUALIFICATIONS("Квалифицация"),
-    EXPERIENCE("Опыт работы"),
-    EDUCATION("Образование");
+    OBJECTIVE("OBJECTIVE") {
+        @Override
+        public Section getEmptySection(){
+            return TextSection.EMPTY;
+        }
+    },
+    PERSONAL("PERSONAL") {
+        @Override
+        public Section getEmptySection(){
+            return TextSection.EMPTY;
+        }
+    },
+    QUALIFICATIONS("QUALIFICATIONS") {
+        @Override
+        public Section getEmptySection(){
+            return ListSection.EMPTY;
+        }
+    },
+    ACHIEVEMENT("ACHIEVEMENT") {
+        @Override
+        public Section getEmptySection(){
+            return ListSection.EMPTY;
+        }
+    },
+    EXPERIENCE("EXPERIENCE") {
+        @Override
+        public Section getEmptySection(){
+            return OrganizationSection.EMPTY;
+        }
+    },
+    EDUCATION("EDUCATION") {
+        @Override
+        public Section getEmptySection(){
+            return OrganizationSection.EMPTY;
+        }
+    };
 
     private final String title;
 
@@ -16,5 +46,6 @@ public enum SectionType {
 
     public String getTitle() { return title; }
 
+    public abstract Section getEmptySection();
 
 }

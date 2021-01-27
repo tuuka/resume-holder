@@ -2,8 +2,9 @@ package my.webapp.storage;
 
 import my.webapp.model.Resume;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MapUuidStorage extends AbstractStorage<String>{
@@ -54,15 +55,15 @@ public class MapUuidStorage extends AbstractStorage<String>{
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return storage.values().toArray(new Resume[0]);
+    protected List<Resume> doGetAll() {
+        return new ArrayList<>(storage.values());
     }
 
     @Override
     public String toString() {
         return "MapStorage{" +
                 "size=" + storage.size() +
-                ", storage=" + Arrays.toString(getAll()) +
+                ", storage=" + doGetAll() +
                 '}';
     }
 }

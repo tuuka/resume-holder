@@ -9,21 +9,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Organization implements Serializable {
+public class Organization implements Comparable<Organization>, Serializable {
     private static final long serialVersionUID = 1L;
-    private Link homePage;
-
+    private final Link homePage;
     public static Organization EMPTY = new Organization();
-    //    private final Map<ContactType, String> contacts = new HashMap<>();
-    private List<Position> positions;
+    private final List<Position> positions;
 
     private Organization() {
+        this("Empty", "");
     }
 
     public Organization(String name, String url, Position... positions) {
@@ -49,7 +45,7 @@ public class Organization implements Serializable {
      * {@code MM/yyyy}).
      *
      * @param startDate   start date of Position
-     * @param endDate  finish date of Position
+     * @param endDate     finish date of Position
      * @param title       position title
      * @param description position description
      * @throws NullPointerException if {@code startDate} or {@code endDate}
@@ -83,18 +79,30 @@ public class Organization implements Serializable {
         return Objects.hash(homePage, positions);
     }
 
+    @Override
+    public int compareTo(Organization o) {
+        int positionCompare = 0;
+        if (this.getPositions().size() > 0 && o.getPositions().size() > 0){
+            positionCompare = this.getPositions().get(0).compareTo(o.getPositions().get(0));
+        }
+        return positionCompare !=0? positionCompare:
+                this.getHomePage().getName().compareTo(o.getHomePage().getName());
+    }
+
 
     @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Position implements Serializable{
+    public static class Position implements Comparable<Position>, Serializable {
         private static final long serialVersionUID = 1L;
-        private String title, description;
+        private final String title, description;
+        public static Position EMPTY = new Position();
 
         @JsonSerialize(converter = DateUtil.LocalDateToStringConverter.class)
         @JsonDeserialize(converter = DateUtil.StringToLocalDateConverter.class)
         @XmlJavaTypeAdapter(DateUtil.LocalDateJaxbAdapter.class)
-        private LocalDate startDate, endDate;
+        private final LocalDate startDate, endDate;
 
         public Position() {
+            this(DateUtil.NOW, DateUtil.NOW, "", "");
         }
 
         /**
@@ -119,7 +127,7 @@ public class Organization implements Serializable {
          * {@code MM/yyyy}).
          *
          * @param startDate   start date of Position
-         * @param endDate  finish date of Position
+         * @param endDate     finish date of Position
          * @param title       position title
          * @param description position description
          * @throws NullPointerException if {@code startDate} or {@code endDate}
@@ -141,13 +149,21 @@ public class Organization implements Serializable {
             this.description = description == null ? "" : description;
         }
 
-        public String getTitle() { return title; }
+        public String getTitle() {
+            return title;
+        }
 
-        public String getDescription() { return description; }
+        public String getDescription() {
+            return description;
+        }
 
-        public LocalDate getStartDate() { return startDate; }
+        public LocalDate getStartDate() {
+            return startDate;
+        }
 
-        public LocalDate getEndDate() { return endDate; }
+        public LocalDate getEndDate() {
+            return endDate;
+        }
 
         @Override
         public boolean equals(Object o) {
@@ -167,7 +183,12 @@ public class Organization implements Serializable {
 
         @Override
         public String toString() {
-            return String.format("С %s по %s %15s (%s)", startDate, endDate, title, description);
+            return String.format("From %s to %s %s (%s)", startDate, endDate, title, description);
+        }
+
+        @Override
+        public int compareTo(Position o) {
+            return o.getStartDate().compareTo(this.getStartDate());
         }
     }
 }

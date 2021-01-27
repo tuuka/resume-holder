@@ -11,12 +11,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static my.webapp.model.ResumeTest.*;
+import static my.webapp.model.ResumeTest.R1;
+import static my.webapp.model.ResumeTest.R2;
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractStorageTest {
@@ -26,8 +28,7 @@ public abstract class AbstractStorageTest {
 
     protected Storage storage;
     protected static final int CAPACITY = ArrayStorage.STORAGE_CAPACITY;
-    protected static final List<Resume> resumes =
-            Resume.generateNFakeResumes(CAPACITY);
+    protected static final List<Resume> resumes = Resume.generateNFakeResumes(CAPACITY);
 
     public AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -136,26 +137,17 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        storage.save(new Resume("a", "a"));
-        storage.save(new Resume("b", "b"));
-        storage.save(new Resume("c", "c"));
-        Resume[] array = storage.getAll();
-        assertEquals(array.length, storage.size());
-        if (storage instanceof ArrayStorage) {
-            assertEquals("a", storage.get("a").getUuid());
-            assertEquals("b", storage.get("b").getUuid());
-            assertEquals("c", storage.get("c").getUuid());
-        }
-    }
-
-    @Test
-    public void getAllToPosition() {
-        storage.save(R1);
-        storage.save(R2);
-        storage.save(R3);
-        Resume[] array = storage.getAllToPosition(2);
-        assertEquals(2, array.length);
+    public void getAllSorted() {
+        resumes.stream().sorted().limit(5).forEach(storage::save);
+        Collections.sort(resumes);
+        List<Resume> earnedList = storage.getAllSorted();
+        assertEquals(storage.size(), earnedList.size());
+//        if (storage instanceof ArrayStorage) {
+        assertAll("Sorted resumes should have same order",
+                () -> assertEquals(resumes.get(0), earnedList.get(0)),
+                () -> assertEquals(resumes.get(1), earnedList.get(1))
+        );
+//        }
     }
 
     @AfterEach

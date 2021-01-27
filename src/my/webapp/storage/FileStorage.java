@@ -113,7 +113,7 @@ public class FileStorage extends AbstractStorage<File> {
     }
 
     @Override
-    protected Resume[] doGetAll() {
+    protected List<Resume> doGetAll() {
         File[] files = directory.listFiles();
         if (files == null) {
             throw new StorageException("Directory read error");
@@ -121,6 +121,13 @@ public class FileStorage extends AbstractStorage<File> {
         List<Resume> resumes = new ArrayList<>();
         for (File f : files)
             resumes.add(doGet(f));
-        return resumes.toArray(new Resume[0]);
+        return resumes;
+    }
+
+    @Override
+    public String toString() {
+        return "FileStorage{" +
+                "storage=" + doGetAll() +
+                '}';
     }
 }

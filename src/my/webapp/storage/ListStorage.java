@@ -3,7 +3,6 @@ package my.webapp.storage;
 import my.webapp.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ListStorage extends AbstractStorage<Integer>{
@@ -57,15 +56,12 @@ public class ListStorage extends AbstractStorage<Integer>{
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return storage.toArray(new Resume[0]);
-    }
+    protected List<Resume> doGetAll() { return storage; }
 
     @Override
     public String toString() {
         return "ListStorage{" +
-                "size=" + storage.size() +
-                ", storage=" + Arrays.toString(getAll()) +
+                "storage=" + storage +
                 '}';
     }
 }

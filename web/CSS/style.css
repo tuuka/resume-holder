@@ -35,18 +35,24 @@ a {
 /*}*/
 
 .menu {
-    display: flex;
+    position: fixed;
+    top: 0;
     width: 100%;
-    height: 2.6rem;
+    display: flex;
+    height: 2.2rem;
     background-color: #212529;
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+.menu li {
+    display: flex;
+    align-items: center;
 }
 
 .menu .menu__item {
     margin-left: 1rem;
     color: white;
-    align-self: center;
 }
 
 .menu .menu__item:hover {
@@ -60,8 +66,8 @@ a {
 
 .container {
     padding: 1em;
-    max-width: 767px;
-    margin: 0 auto;
+    max-width: 991px;
+    margin: 2em auto 0 auto;
     font-size: 1.2em;
 }
 
@@ -101,18 +107,22 @@ a {
 
 .resume-list__content {
     display: flex;
-    width: 80%;
+    width: 90%;
+}
+
+.resume-list__item:not(:first-child) {
+    font-family: monospace;
 }
 
 .resume-list__item_name {
-    width: 60%;
+    width: 40%;
     padding: 0 1em;
 }
 
 .resume-list__item_uuid {
     display: block;
     position: relative;
-    width: 40%;
+    width: 60%;
     padding: 0 1em;
 }
 
@@ -137,20 +147,20 @@ a {
 }
 
 .resume-list__item_actions {
-    width: 20%;
+    width: 10%;
     padding: 0 1em;
     text-align: center;
 }
 
 .resume-list__item_actions a {
-    margin: 0 0.2em;
+    margin: 0 0.1em;
 }
 
 .title {
     font-weight: 600;
     font-style: initial;
     display: inline-block;
-    width: 5.5em;
+    width: 6.0em;
     text-align: right;
     padding-right: 0.4em;
 }
@@ -186,14 +196,21 @@ a {
 }
 
 .resume-view__contacts,.resume-edit__contacts {
-    margin-bottom: 1em;
+    margin-bottom: 2em;
+}
+
+.resume-view__sections-item .objective {
+    font-size: 1.1em;
+    font-weight: 500;
+    font-style: italic;
 }
 
 .resume-view__section_title,.resume-edit__section_title{
     text-transform: uppercase;
-    border-bottom: dotted black;
+    border-bottom: dashed 1px black;
+    font-size: 1.3em;
     font-weight: 600;
-    margin: 0.5em 0;
+    margin: 0.6em 0 0.2em 0;
 }
 
 .resume-view__section_text,.resume-edit__section_text,
@@ -214,6 +231,10 @@ a {
     cursor: pointer;
 }
 
+.resume-view__section_org {
+    padding-top: 0.5em;
+}
+
 .resume-view__org-name {
     font-style: italic;
     font-weight: 500;
@@ -226,8 +247,6 @@ a {
 }
 
 .resume-edit__org-name *,.resume-edit__position * {
-    /*font-size: 1em;*/
-    /*font-style: inherit;*/
     margin-right: 0.4em;
 }
 
@@ -236,7 +255,8 @@ a {
 }
 
 .resume-view__position,.resume-edit__position {
-    margin-left: 2em;
+    margin-top: 0.25em;
+    margin-left: 3em;
     font-size: 0.8em;
 }
 
@@ -247,5 +267,10 @@ a {
 
 .resume-edit__input-date {
     width: 4em;
+}
+
+.position-date {
+    font-style: italic;
+    font-weight: 600;
 }
 

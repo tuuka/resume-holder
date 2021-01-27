@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
@@ -116,7 +116,7 @@ public class PostgresJsonStorage implements Storage {
     }
 
     @Override
-    public Resume[] getAll() {
+    public List<Resume> getAllSorted() {
         return helper.connectAndExecute("SELECT * FROM resume_json",
                 ps -> {
                     ResultSet rs = ps.executeQuery();
@@ -124,14 +124,9 @@ public class PostgresJsonStorage implements Storage {
                     while (rs.next()) {
                         resumes.add(getResume(rs));
                     }
-                    return resumes.toArray(new Resume[0]);
+                    Collections.sort(resumes);
+                    return resumes;
                 });
-    }
-
-    @Override
-    public Resume[] getAllToPosition(int pos) {
-        if (pos > size()) pos = size();
-        return Arrays.copyOfRange(getAll(), 0, pos);
     }
 
     private Resume getResume(ResultSet rs) throws SQLException {
@@ -157,5 +152,12 @@ public class PostgresJsonStorage implements Storage {
         for (int i = 0; i < args.length; i++)
             ps.setString(i + 1, args[i]);
         return ps;
+    }
+
+    @Override
+    public String toString() {
+        return "PostgresJsonStorage{" +
+                "storage=" + getAllSorted() +
+                '}';
     }
 }

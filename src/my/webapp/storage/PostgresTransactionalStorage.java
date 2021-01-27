@@ -287,7 +287,7 @@ public class PostgresTransactionalStorage implements Storage {
     }
 
     @Override
-    public Resume[] getAll() {
+    public List<Resume> getAllSorted() {
         return helper.connectAndExecute("SELECT uuid FROM resume",
                 statement -> {
                     ResultSet rs = statement.executeQuery();
@@ -295,14 +295,15 @@ public class PostgresTransactionalStorage implements Storage {
                     while (rs.next()) {
                         resumes.add(get(rs.getString("uuid")));
                     }
-                    return resumes.toArray(new Resume[0]);
+                    Collections.sort(resumes);
+                    return resumes;
                 });
     }
 
     @Override
-    public Resume[] getAllToPosition(int pos) {
-        if (pos > size()) pos = size();
-        return Arrays.copyOfRange(getAll(), 0, pos);
+    public String toString() {
+        return "PostgresTransactionalStorage{" +
+                "storage=" + getAllSorted() +
+                '}';
     }
-
 }

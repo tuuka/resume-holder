@@ -2,8 +2,8 @@ package my.webapp.storage;
 
 import my.webapp.model.Resume;
 
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MapResumeStorage extends AbstractStorage<Resume>{
@@ -54,15 +54,15 @@ public class MapResumeStorage extends AbstractStorage<Resume>{
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return storage.values().toArray(new Resume[0]);
+    protected List<Resume> doGetAll() {
+        return (List<Resume>) storage.values();
     }
 
     @Override
     public String toString() {
         return "MapStorage{" +
                 "size=" + storage.size() +
-                ", storage=" + Arrays.toString(getAll()) +
+                ", storage=" + doGetAll() +
                 '}';
     }
 }

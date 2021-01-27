@@ -1,17 +1,13 @@
 package my.webapp.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class OrganizationSection extends Section {
     private static final long serialVersionUID = 1L;
+    public static final OrganizationSection EMPTY = new OrganizationSection();
     private final List<Organization> organizations;
 
-    public OrganizationSection(){
-        this(Organization.EMPTY);
-    }
+    public OrganizationSection(){ this(Collections.emptyList()); }
 
     public OrganizationSection(Organization... organizations) {
         this(Arrays.asList(organizations));

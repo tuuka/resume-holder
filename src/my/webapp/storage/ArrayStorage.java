@@ -6,6 +6,7 @@ import my.webapp.exception.ArrayStorageOverflowException;
 import my.webapp.model.Resume;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class ArrayStorage extends AbstractStorage<Integer> {
 
@@ -61,8 +62,8 @@ public class ArrayStorage extends AbstractStorage<Integer> {
     }
 
     @Override
-    protected Resume[] doGetAll() {
-        return Arrays.copyOf(storage, size);
+    protected List<Resume> doGetAll() {
+        return List.of(Arrays.copyOf(storage, size));
     }
 
     @Override

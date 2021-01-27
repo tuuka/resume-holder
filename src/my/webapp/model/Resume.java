@@ -1,5 +1,7 @@
 package my.webapp.model;
 
+import com.github.javafaker.Faker;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,12 +14,10 @@ import java.util.*;
 //@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Resume implements Comparable<Resume>, Serializable {
     private static final long serialVersionUID = 1L;
-    private static int count;
     private String uuid;
     private String fullName;
 
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
-
     private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
 //    public static final Resume EMPTY = new Resume();
@@ -31,7 +31,7 @@ public class Resume implements Comparable<Resume>, Serializable {
 //        EMPTY.setSection(SectionType.EDUCATION, new OrganizationSection(Organization.EMPTY));
 //    }
 
-    public Resume(){ this("John Doe-" + (count + 1)); }
+    public Resume(){ this(generateNFakeResumes(1).get(0).getFullName()); }
 
     public Resume(String fullName){
         this(UUID.randomUUID().toString(), fullName);
@@ -42,7 +42,6 @@ public class Resume implements Comparable<Resume>, Serializable {
         Objects.requireNonNull(fullName, "Full name cannot be null!");
         this.uuid = uuid;
         this.fullName = fullName;
-        count++;
     }
 
     public String getUuid() { return uuid; }
@@ -68,7 +67,6 @@ public class Resume implements Comparable<Resume>, Serializable {
     public Map<ContactType, String> getContacts() { return contacts; }
 
     public Map<SectionType, Section> getSections() { return sections; }
-
 
 
     @Override
@@ -104,71 +102,65 @@ public class Resume implements Comparable<Resume>, Serializable {
             this.getUuid().compareTo(o.getUuid());
     }
 
-    // made to maintain identity when serializing and deserializing
-    public void sort(){
+    public Resume sort(){
         for (Map.Entry<SectionType, Section> entry : this.getSections().entrySet()){
             if (entry.getValue() instanceof ListSection)
                 Collections.sort(((ListSection) entry.getValue()).getItems());
             if (entry.getValue() instanceof OrganizationSection) {
                 OrganizationSection os = (OrganizationSection)entry.getValue();
-                os.getOrganizations().sort(Comparator.comparing(o -> o.getHomePage().getName()));
-                os.getOrganizations().forEach(o->
-                    o.getPositions().sort(Comparator.comparing(Organization.Position::getTitle))
-                );
+                os.getOrganizations().sort(Organization::compareTo);
+                os.getOrganizations().forEach(o -> o.getPositions().sort(Organization.Position::compareTo));
             }
         }
+        return this;
     }
 
     public static List<Resume> generateNFakeResumes(int n){
+        Faker faker = new Faker();
         Random random = new Random();
         List<Resume> resumeList = new ArrayList<>();
         List<String> ls;
         for (int i = 0; i < n; i++){
-            Resume r = new Resume(String.format("uuid%d", i), String.format("name%d", i));
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            Resume r = new Resume(UUID.randomUUID().toString(), firstName + " " + lastName);
             for (ContactType ct : ContactType.values()){
                 switch (ct) {
                     case MOBILE:
                     case PHONE:
-                        r.setContact(ct, String.format("+%d", random.nextInt(1000000000)));
+                        r.setContact(ct, "+" + (random.nextInt(8) + 1) + faker.phoneNumber().phoneNumber());
                         break;
                     case SKYPE:
-                        r.setContact(ct, String.format("name%d", random.nextInt(1000)));
+                        r.setContact(ct, faker.name().username());
                         break;
                     case MAIL:
-                        r.setContact(ct, String.format("name%d@gmail.com", i));
+                        r.setContact(ct, faker.internet().emailAddress());
                         break;
                     case GITHUB:
-                        r.setContact(ct, String.format("www.github.com/name%d", i));
+                        r.setContact(ct, String.format("http://www.github.com/%s", lastName));
                         break;
                     case HOME_PAGE:
-                        r.setContact(ct, String.format("www.name%d.com", i));
+                        r.setContact(ct, "http://" + faker.internet().url());
                         break;
                 }}
             for (SectionType st : SectionType.values())
                 switch (st){
                     case PERSONAL:
-                        r.setSection(st, new TextSection("PERSONAL of R uuid" + i));
+                        r.setSection(st, new TextSection(faker.chuckNorris().fact()));
                         break;
                     case OBJECTIVE:
-                        r.setSection(st, new TextSection("OBJECTIVE of R uuid" + i));
+                        r.setSection(st, new TextSection(faker.job().title()));
                         break;
                     case QUALIFICATIONS:
-                        ls = new ArrayList<>();
-                        for (int q = 0; q < 1+random.nextInt(5); q++)
-                            ls.add(String.format("QUALIFICATION%d of R uuid%d", q, i));
-                        r.setSection(st, new ListSection(ls));
-                        break;
                     case ACHIEVEMENT:
                         ls = new ArrayList<>();
                         for (int q = 0; q < 1+random.nextInt(5); q++)
-                            ls.add(String.format("ACHIEVEMENT%d of R uuid%d", q, i));
+                            ls.add(faker.lorem().sentence(3));
                         r.setSection(st, new ListSection(ls));
                         break;
                     case EDUCATION:
-                        r.setSection(st, generateOrgSection("EDU_", i, random));
-                        break;
                     case EXPERIENCE:
-                        r.setSection(st, generateOrgSection("EXP_", i, random));
+                        r.setSection(st, generateOrgSection(random, faker, st));
                         break;
                 }
             resumeList.add(r);
@@ -176,7 +168,7 @@ public class Resume implements Comparable<Resume>, Serializable {
         return resumeList;
     }
 
-    private static Section generateOrgSection(String s, int i, Random random){
+    private static Section generateOrgSection(Random random, Faker faker, SectionType sectionType){
         List<Organization> lo;
         List<Organization.Position> lp;
         lo = new ArrayList<>();
@@ -187,13 +179,15 @@ public class Resume implements Comparable<Resume>, Serializable {
                 lp.add(new Organization.Position(
                         LocalDate.ofEpochDay(ld.toEpochDay()+(p+o)*120),
                         LocalDate.ofEpochDay(ld.toEpochDay()+(p+o+1)*120),
-                        String.format("Position%d at %sOrganization%d%d", p, s, i, o),
-                        String.format("PosDescr%d at %sOrganization%d%d", p, s, i, o)));
+                        sectionType.equals(SectionType.EDUCATION)
+                        ? "Student" : faker.job().position(),
+                        faker.job().title()));
 
             lo.add(new Organization(
-                    new Link(String.format("%sOrganization%d%d", s, i, o),
-                            String.format("www.%sorganization%d%d.com", s, i, o)),
-                    lp));
+                    new Link(sectionType.equals(SectionType.EDUCATION)
+                            ? faker.university().name()
+                            : faker.company().name(),
+                            "http://" +faker.company().url()), lp));
         }
         return new OrganizationSection(lo);
     }

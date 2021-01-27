@@ -4,7 +4,8 @@ import my.webapp.exception.StorageResumeExistsException;
 import my.webapp.exception.StorageResumeNotFoundException;
 import my.webapp.model.Resume;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /* Абстрактный класс для всех хранилищ. K - ключ, используемый для поиска
@@ -30,7 +31,7 @@ public abstract class AbstractStorage<K> implements Storage{
 
     protected abstract boolean isExist(K key);
 
-    protected abstract Resume[] doGetAll();
+    protected abstract List<Resume> doGetAll();
 
     private K getExistedSearchKey(String uuid) {
         K key = getSearchKey(uuid);
@@ -85,14 +86,8 @@ public abstract class AbstractStorage<K> implements Storage{
     }
 
     @Override
-    public Resume[] getAll() {
-        return doGetAll();
-    }
-
-    @Override
-    public Resume[] getAllToPosition(int pos) {
-        if (pos > size()) pos = size();
-        return Arrays.copyOfRange(getAll(), 0, pos);
+    public List<Resume> getAllSorted() {
+        return doGetAll().stream().sorted().collect(Collectors.toList());
     }
 
 }

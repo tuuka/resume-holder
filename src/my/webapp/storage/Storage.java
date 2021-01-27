@@ -3,6 +3,7 @@ package my.webapp.storage;
 import my.webapp.model.Resume;
 import my.webapp.util.LoggerFactory;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public interface Storage {
@@ -24,8 +25,6 @@ public interface Storage {
 
     void clear();
 
-    Resume[] getAll();
-
-    Resume[] getAllToPosition(int pos);
+    List<Resume> getAllSorted();
 
 }
