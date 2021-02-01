@@ -19,7 +19,7 @@
     <section class="container resume-view">
         <div class="resume-view__name"><span class="title">Full name: </span>${resume.fullName}</div>
         <div class="resume-view__uuid"><span class="title">uuid: </span>${resume.uuid}
-            <a class="resume-view__edit-button" href="?uuid=${resume.uuid}&action=edit">Edit resume</a>
+            <a class="resume-button" href="?uuid=${resume.uuid}&action=edit">Edit resume</a>
         </div>
         <div class="resume-view__contacts">
             <c:forEach var="contactEntry" items="${resume.contacts}">

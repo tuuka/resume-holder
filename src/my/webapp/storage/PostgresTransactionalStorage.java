@@ -263,8 +263,7 @@ public class PostgresTransactionalStorage implements Storage {
                     statement.setString(1, uuid);
                     if (statement.executeUpdate() == 0) {
                         LOGGER.warning("Can't delete resume uuid=" + uuid);
-                        throw new StorageResumeNotFoundException(
-                                "Can't delete resume uuid=" + uuid);
+                        throw new StorageResumeNotFoundException(uuid);
                     }
                     return null;
                 });

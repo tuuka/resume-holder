@@ -30,9 +30,9 @@ a {
     text-decoration: none;
 }
 
-/*img {*/
-/*    vertical-align: middle;*/
-/*}*/
+.hidden {
+    display: none !important;
+}
 
 .menu {
     position: fixed;
@@ -179,7 +179,7 @@ a {
     margin-bottom: 0.5em;
 }
 
-.resume-view__edit-button,.resume-edit__add-button{
+.resume-button{
     margin-left: 2em;
     cursor: pointer;
     border: solid 1px black;
@@ -187,11 +187,11 @@ a {
     background-color: #DDDDDD;
 }
 
-.resume-edit__add-button,.resume-view__edit-button:hover{
+.resume-button:hover{
     box-shadow: 0 0 2px;
 }
 
-.resume-edit__add-button,.resume-view__edit-button:active{
+.resume-button:active{
     box-shadow: none;
 }
 
@@ -213,6 +213,24 @@ a {
     margin: 0.6em 0 0.2em 0;
 }
 
+.resume-edit__section_title{
+    /*margin: 1em 0 0.6em 0;*/
+}
+
+.resume-edit__contacts li {
+    margin-bottom: 0.2em;
+}
+
+.resume-edit__input {
+    border-style: unset;
+    border-bottom-style: ridge;
+    /*font-weight: 400;*/
+}
+
+.resume-edit__section_list {
+    margin-top: 0.2em;
+}
+
 .resume-view__section_text,.resume-edit__section_text,
 .resume-view__org-name,.resume-edit__org-name{
     margin-left: 1em;
@@ -221,18 +239,30 @@ a {
 .resume-edit__section_text {
     display: flex;
     align-items: end;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
-.resume-edit__delete-icon,.resume-edit__add-icon {
+.resume-edit__delete-icon {
     margin-left: 0.5em;
 }
+
+/*.resume-edit__add-icon {*/
+/*    margin-left: 0;*/
+/*}*/
 
 .resume-edit__delete-icon,.resume-edit__add-icon:hover {
     cursor: pointer;
 }
 
-.resume-view__section_org {
+.resume-view__section_org,.resume-edit__section_org {
     padding-top: 0.5em;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.resume-edit__section_org:not(:last-child) {
+    margin-bottom: 0.5em;
 }
 
 .resume-view__org-name {
@@ -242,7 +272,6 @@ a {
 }
 
 .resume-edit__org-name {
-    display: flex;
     margin-bottom: 0.2em;
 }
 
@@ -257,12 +286,11 @@ a {
 .resume-view__position,.resume-edit__position {
     margin-top: 0.25em;
     margin-left: 3em;
-    font-size: 0.8em;
 }
 
 .resume-edit__position {
     display: flex;
-    margin-bottom: 0.2em;
+    margin-top: 0.6em;
 }
 
 .resume-edit__input-date {

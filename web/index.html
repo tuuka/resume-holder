@@ -51,7 +51,7 @@
         </div>
         <div class="resume-view__uuid">
             <span class="title">uuid: </span>1234-5678-7945-5621
-            <a class="resume-view__edit-button">Edit resume</a>
+            <a class="resume-button">Edit resume</a>
         </div>
         <div class="resume-view__contacts">
             <p>
@@ -135,16 +135,16 @@
         </ul>
     </section>
     <section class="container resume-edit">
-        <div class="resume-edit__form">
+        <form class="resume-edit__form" action="?action=save">
             <div class="resume-edit__name">
                 <div class="title">Full name:</div>
                 <input type="text" class="resume-edit__input"
-                       name="full_name" required placeholder="Pupkin Vasilij Petrovitch" />
+                       name="full_name" required value="Pupkin Vasilij Petrovitch" />
             </div>
             <div class="resume-edit__uuid">
                 <div class="title">uuid:</div>
                 <input type="text" class="resume-edit__input"
-                       name="uuid" required placeholder="1234-5678-7945-5621" />
+                       name="uuid" required value="1234-5678-7945-5621" />
             </div>
             <ul class="resume-edit__contacts">
                 <li>
@@ -374,7 +374,7 @@
                     </ul>
                 </li>
             </ul>
-        </div>
+        </form>
     </section>
 </main>
 </body>
