@@ -40,19 +40,21 @@
                     <div class="resume-view__section_title"><%=type.getTitle()%></div>
                     <c:choose>
                         <c:when test="<%=type.equals(SectionType.PERSONAL) || type.equals(SectionType.OBJECTIVE)%>">
-                            <div class="resume-view__section_text <%=type.equals(SectionType.OBJECTIVE) ? "objective" : ""%>"><%=((TextSection) section).getContent()%></div>
+                            <div class="resume-view__text <%=type.equals(SectionType.OBJECTIVE) ?
+                                "objective" : ""%>"><%=((TextSection) section).getContent()%>
+                            </div>
                         </c:when>
                         <c:when test="<%=type.equals(SectionType.QUALIFICATIONS) || type.equals(SectionType.ACHIEVEMENT)%>">
                             <ul class="resume-view__section_list">
                                 <c:forEach var="item" items="<%=((ListSection)section).getItems()%>">
-                                    <li class="resume-view__section_text">${item}</li>
+                                    <li class="resume-view__text">${item}</li>
                                 </c:forEach>
                             </ul>
                         </c:when>
                         <c:when test="<%=type.equals(SectionType.EXPERIENCE) || type.equals(SectionType.EDUCATION)%>">
-                            <ul class="resume-view__section_org-list">
+                            <ul class="resume-view__org-list">
                                 <c:forEach var="org" items="<%=((OrganizationSection)section).getOrganizations()%>">
-                                    <li class="resume-view__section_org">
+                                    <li class="resume-view__org">
                                         <c:choose>
                                             <c:when test="${empty org.homePage.url}">
                                                 <div class="resume-view__org-name">${org.homePage.name}</div>

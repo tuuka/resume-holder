@@ -33,9 +33,9 @@
                     </div>
                     <div class="resume-list__item_actions">
                         <a href="?uuid=${resume.uuid}&action=edit"><img
-                                src="${pageContext.request.contextPath}/img/pencil.png" alt="Edit"></a>
+                                src="${pageContext.request.contextPath}/img/edit.svg" alt="Edit"></a>
                         <a href="?uuid=${resume.uuid}&action=delete"><img
-                                src="${pageContext.request.contextPath}/img/delete.png" alt="Delete"></a>
+                                src="${pageContext.request.contextPath}/img/delete.svg" alt="Delete"></a>
                     </div>
                 </li>
             </c:forEach>

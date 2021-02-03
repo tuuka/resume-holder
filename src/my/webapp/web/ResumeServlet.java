@@ -26,25 +26,27 @@ public class ResumeServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
-//        response.setContentType("text/html; charset=UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
 //        response.setHeader("Content-Type", "text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
-        String newUuid = request.getParameter("new_uuid");
+        String editUuid = request.getParameter("edit_uuid");
         String fullName = request.getParameter("full_name");
         Map<String, String[]> m = request.getParameterMap();
 
-        final boolean isCreate = (uuid == null || uuid.length() == 0 || !newUuid.equals(uuid));
         Resume r;
+        //check if 'add resume' or 'save copied resume' was chosen
+        final boolean isCreate = (uuid == null || uuid.length() == 0 ||
+                (editUuid != null && !editUuid.equals(uuid)));
         if (isCreate) {
-            if (newUuid != null && !newUuid.equals("")){
-                r = new Resume(newUuid, fullName);
+            if (editUuid.length() > 0){
+                r = new Resume(editUuid, fullName);
             } else r = new Resume(fullName);
         } else {
             r = storage.get(uuid);
             r.setFullName(fullName);
         }
-        uuid = r.getUuid();
+
         for (ContactType ct : ContactType.values()) {
             String value = request.getParameter(ct.toString());
             if (value == null || value.length() == 0) {
@@ -72,15 +74,13 @@ public class ResumeServlet extends HttpServlet {
                 case EDUCATION:
                 case EXPERIENCE:
                     List<Organization> orgs = new ArrayList<>();
+                    String[] orgUrls = request.getParameterValues(st + "_url");
                     for (int i = 0; i < values.length; i++) {
-                        String orgName = values[i];
-                        String orgUrl = request.getParameter(st + "_" + i + "_url");
                         List<Organization.Position> positions = new ArrayList<>();
-                        String posTitleId = st.toString() + "_" + i + "_postitle";
-                        String[] posTitle = request.getParameterValues(st.toString() + "_" + i + "_postitle");
-                        String[] posDescr = request.getParameterValues(st.toString() + "_" + i + "_posdescr");
-                        String[] posStartDateStr = request.getParameterValues(st.toString() + "_" + i + "_posstart");
-                        String[] posEndDateStr = request.getParameterValues(st.toString() + "_" + i + "_posend");
+                        String[] posTitle = request.getParameterValues(st + "_" + i + "_postitle");
+                        String[] posDescr = request.getParameterValues(st + "_" + i + "_posdescr");
+                        String[] posStartDateStr = request.getParameterValues(st + "_" + i + "_posstart");
+                        String[] posEndDateStr = request.getParameterValues(st + "_" + i + "_posend");
                         for(int j = 0; j < posTitle.length; j++){
                             if (posTitle[j].equals("") || posStartDateStr[j].equals("")) continue;
                             positions.add(new Organization.Position(
@@ -89,28 +89,22 @@ public class ResumeServlet extends HttpServlet {
                                     posTitle[j],
                                     posDescr[j]));
                         }
-                        orgs.add(new Organization(new Link(orgName, orgUrl), positions));
+                        orgs.add(new Organization(new Link(values[i], orgUrls[i]), positions));
                     }
                     r.setSection(st, new OrganizationSection(orgs));
                     break;
             }
         }
-        Resume existing;
-        try {
-            existing=storage.get(uuid);
-        } catch (Exception e){
-            existing = null;
-        }
-        if (existing == null) storage.save(r);
+        if (isCreate) storage.save(r);
             else storage.update(r);
-        response.sendRedirect(String.format("%s/?uuid=%s&action=view",
+        response.sendRedirect(String.format("%s?uuid=%s&action=view",
                 request.getContextPath(), r.getUuid()));
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
-        response.setHeader("Content-Type", "text/html; charset=UTF-8");
+//        response.setHeader("Content-Type", "text/html; charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
         String uuid = request.getParameter("uuid");
@@ -132,8 +126,12 @@ public class ResumeServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "");
                 return;
             case "add":
-                r = new Resume();
+                r = new Resume("Empty");
                 break;
+            case "generate":
+                storage.save(Resume.generateNFakeResumes(1).get(0));
+                response.sendRedirect(request.getContextPath() + "");
+                return;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal!");
         }

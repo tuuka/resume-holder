@@ -1,18 +1,13 @@
 package my.webapp.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ListSection extends Section {
     private static final long serialVersionUID = 1L;
     private final List<String> items;
     public static final ListSection EMPTY = new ListSection();
 
-    public ListSection() {
-        this("");
-    }
+    public ListSection() { items = Collections.emptyList(); }
 
     public ListSection(String... items) {
         this(Arrays.asList(items));

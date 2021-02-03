@@ -152,8 +152,13 @@ a {
     text-align: center;
 }
 
-.resume-list__item_actions a {
-    margin: 0 0.1em;
+/*.resume-list__item_actions a {*/
+/*    margin: 0 0.1em;*/
+/*}*/
+
+.resume-list__item_actions img {
+    width: 1em;
+    height: 1em;
 }
 
 .title {
@@ -227,41 +232,45 @@ a {
     /*font-weight: 400;*/
 }
 
-.resume-edit__section_list {
+.resume-edit__text-list {
     margin-top: 0.2em;
 }
 
-.resume-view__section_text,.resume-edit__section_text,
-.resume-view__org-name,.resume-edit__org-name{
+.resume-view__text,.resume-edit__text,
+.resume-view__org-name{
     margin-left: 1em;
 }
 
-.resume-edit__section_text {
+.resume-edit__text {
     display: flex;
     align-items: end;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
 }
 
-.resume-edit__delete-icon {
-    margin-left: 0.5em;
+.resume-edit__delete-icon,.resume-edit__add-icon {
+    margin-right: 0.2em;
+    display: inline-flex;
+    align-items: center;
 }
 
-/*.resume-edit__add-icon {*/
-/*    margin-left: 0;*/
-/*}*/
-
-.resume-edit__delete-icon,.resume-edit__add-icon:hover {
+.resume-edit__delete-icon,.resume-edit__add-icon {
     cursor: pointer;
 }
 
-.resume-view__section_org,.resume-edit__section_org {
+.resume-edit__delete-icon img,.resume-edit__add-icon img {
+    width: 0.9em;
+    height: 0.9em;
+}
+
+.resume-view__org,.resume-edit__org {
     padding-top: 0.5em;
+    padding-left: 1em;
     font-size: 0.8em;
     font-weight: 500;
 }
 
-.resume-edit__section_org:not(:last-child) {
+.resume-edit__org:not(:last-child) {
     margin-bottom: 0.5em;
 }
 
@@ -275,9 +284,9 @@ a {
     margin-bottom: 0.2em;
 }
 
-.resume-edit__org-name *,.resume-edit__position * {
-    margin-right: 0.4em;
-}
+/*.resume-edit__org-name *,.resume-edit__position * {*/
+/*    margin-right: 0.4em;*/
+/*}*/
 
 .resume-view__org-link,.resume-edit__org-link {
     margin-left: 1em;

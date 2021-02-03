@@ -3,9 +3,10 @@
 <header>
     <menu>
         <ul class="menu">
-            <li><a class="menu__item active" href="${pageContext.request.contextPath}">Resume list</a></li>
-            <li><a class="menu__item" href="#">Add resume</a></li>
-            <li><a class="menu__item" href="#">Find resume</a></li>
+            <li><a class="menu__item" href="${pageContext.request.contextPath}">List</a></li>
+            <li><a class="menu__item" href="${pageContext.request.contextPath}?action=add">Add</a></li>
+            <li><a class="menu__item" href="${pageContext.request.contextPath}?action=generate">Generate Fake</a></li>
+            <li><a class="menu__item" href="#">Find</a></li>
         </ul>
     </menu>
 </header>
