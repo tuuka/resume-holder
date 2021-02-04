@@ -5,9 +5,9 @@ import java.util.*;
 public class OrganizationSection extends Section {
     private static final long serialVersionUID = 1L;
     public static final OrganizationSection EMPTY = new OrganizationSection();
-    private final List<Organization> organizations;
+    private final List<Organization> organizations = new ArrayList<>();
 
-    public OrganizationSection(){ this(Collections.emptyList()); }
+    public OrganizationSection() { }
 
     public OrganizationSection(Organization... organizations) {
         this(Arrays.asList(organizations));
@@ -15,14 +15,16 @@ public class OrganizationSection extends Section {
 
     public OrganizationSection(List<Organization> organizations) {
         Objects.requireNonNull(organizations, "organizations must not be null");
-        this.organizations = new ArrayList<>(organizations);
+        this.organizations.addAll(organizations);
     }
 
     public List<Organization> getOrganizations() {
         return this.organizations;
     }
 
-    public void addOrganization(Organization o) { organizations.add(o); }
+    public void addOrganization(Organization o) {
+        organizations.add(o);
+    }
 
     @Override
     public boolean equals(Object o) {

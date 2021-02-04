@@ -36,8 +36,8 @@ public class SQLHelper {
 
     public <T> T connectAndExecute(String sql, ExecuteFunction<T> func) {
         try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement statement = conn.prepareStatement(sql)) {
-            return func.apply(statement);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            return func.apply(ps);
         } catch (SQLException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
             throw new StorageException(e.getMessage(), e);
@@ -70,7 +70,7 @@ public class SQLHelper {
     }
 
     public interface ExecuteFunction<T> {
-        T apply(PreparedStatement statement)
+        T apply(PreparedStatement ps)
                 throws SQLException;
     }
 

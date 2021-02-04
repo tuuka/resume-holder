@@ -1,6 +1,9 @@
 package my.webapp.model;
 
+import my.webapp.Config;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,6 +15,9 @@ public class ResumeTest {
 
     public static final String R2Uuid;
     public static final String R3Uuid;
+
+    public static final List<Resume> RESUMES =
+            Resume.generateNFakeResumes(Config.get().getArrayCapacity());
 
     static {
         R2Uuid = "b";

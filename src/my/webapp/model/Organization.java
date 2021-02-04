@@ -82,10 +82,10 @@ public class Organization implements Comparable<Organization>, Serializable {
     @Override
     public int compareTo(Organization o) {
         int positionCompare = 0;
-        if (this.getPositions().size() > 0 && o.getPositions().size() > 0){
+        if (this.getPositions().size() > 0 && o.getPositions().size() > 0) {
             positionCompare = this.getPositions().get(0).compareTo(o.getPositions().get(0));
         }
-        return positionCompare !=0? positionCompare:
+        return positionCompare != 0 ? positionCompare :
                 this.getHomePage().getName().compareTo(o.getHomePage().getName());
     }
 
@@ -105,34 +105,11 @@ public class Organization implements Comparable<Organization>, Serializable {
             this(DateUtil.NOW, DateUtil.NOW, "", "");
         }
 
-        /**
-         * Create Position object with {@code title}, {@code description} and
-         * {@code startDate} in format of {@code MM/yyyy}. {@code endDate} is
-         * setting automatically
-         *
-         * @param startDate   start date of Position
-         * @param title       position title
-         * @param description position description
-         * @throws NullPointerException if {@code startDate} or
-         *                              {@code title} is {@code null}
-         */
         public Position(String startDate,
                         String title, String description) {
             this(DateUtil.parse(startDate), DateUtil.NOW, title, description);
         }
 
-        /**
-         * Create Position object with {@code title}, {@code description},
-         * {@code startDate} and {@code endDate} (String in format of
-         * {@code MM/yyyy}).
-         *
-         * @param startDate   start date of Position
-         * @param endDate     finish date of Position
-         * @param title       position title
-         * @param description position description
-         * @throws NullPointerException if {@code startDate} or {@code endDate}
-         *                              {@code title} is {@code null}
-         */
         public Position(String startDate, String endDate,
                         String title, String description) {
             this(DateUtil.parse(startDate), DateUtil.parse(endDate), title, description);

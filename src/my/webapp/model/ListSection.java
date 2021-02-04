@@ -4,10 +4,10 @@ import java.util.*;
 
 public class ListSection extends Section {
     private static final long serialVersionUID = 1L;
-    private final List<String> items;
+    private final List<String> items = new ArrayList<>();
     public static final ListSection EMPTY = new ListSection();
 
-    public ListSection() { items = Collections.emptyList(); }
+    public ListSection() { }
 
     public ListSection(String... items) {
         this(Arrays.asList(items));
@@ -15,7 +15,7 @@ public class ListSection extends Section {
 
     public ListSection(List<String> items) {
         Objects.requireNonNull(items, "items must not be null");
-        this.items = new ArrayList<>(items);
+        this.items.addAll(items);
     }
 
     public List<String> getItems() {

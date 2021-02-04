@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /* Реализация SQL Postgres Storage посредством групировки простых запросов
 в транзакции*/
@@ -33,8 +34,8 @@ public class PostgresTransactionalStorage implements Storage {
                 throw new SQLException("Can't find JDBC Driver", e);
             }
             return DriverManager
-                .getConnection(DBUrl, user, password);
-            }, LOGGER);
+                    .getConnection(DBUrl, user, password);
+        }, LOGGER);
     }
 
     @Override
@@ -285,18 +286,34 @@ public class PostgresTransactionalStorage implements Storage {
                 PreparedStatement::execute);
     }
 
+//    @Override
+//    public List<Resume> getAllSorted() {
+//        return helper.connectAndExecute("SELECT uuid FROM resume",
+//                statement -> {
+//                    ResultSet rs = statement.executeQuery();
+//                    List<Resume> resumes = new ArrayList<>();
+//                    while (rs.next()) {
+//                        resumes.add(get(rs.getString("uuid")));
+//                    }
+//                    Collections.sort(resumes);
+//                    return resumes;
+//                });
+//    }
+
     @Override
     public List<Resume> getAllSorted() {
-        return helper.connectAndExecute("SELECT uuid FROM resume",
-                statement -> {
-                    ResultSet rs = statement.executeQuery();
-                    List<Resume> resumes = new ArrayList<>();
-                    while (rs.next()) {
-                        resumes.add(get(rs.getString("uuid")));
-                    }
-                    Collections.sort(resumes);
-                    return resumes;
-                });
+        return helper.connectAndExecute(
+                "SELECT R.uuid, R.full_name, c.cont_type,\n" +
+                        "       c.cont_value, s.sec_type, t.texts_value,\n" +
+                        "       org_title, o.org_url, p.start_date, p.end_date,\n" +
+                        "       p.pos_title, p.pos_description FROM resume R\n" +
+                        "JOIN contact c on R.uuid = c.resume_uuid\n" +
+                        "JOIN section s on R.uuid = s.resume_uuid\n" +
+                        "LEFT JOIN texts t on s.sec_id = t.section_id\n" +
+                        "LEFT JOIN organization o on s.sec_id = o.section_id\n" +
+                        "LEFT JOIN position p on o.org_id = p.organization_id",
+                statement -> getResumesFromResultSet(statement.executeQuery())
+        );
     }
 
     @Override
@@ -305,4 +322,77 @@ public class PostgresTransactionalStorage implements Storage {
                 "storage=" + getAllSorted() +
                 '}';
     }
+
+    protected List<Resume> getResumesFromResultSet(ResultSet rs) throws SQLException {
+        Map<String, Resume> resumeMap = new HashMap<>();
+        Resume r;
+        String uuid, fullName;
+        while (rs.next()) {
+            uuid = rs.getString("uuid");
+            fullName = rs.getString("full_name");
+            if (!resumeMap.containsKey(uuid))
+                resumeMap.put(uuid, new Resume(uuid, fullName));
+            r = resumeMap.get(uuid);
+            String contactType = rs.getString("cont_type");
+            String contactValue = rs.getString("cont_value");
+            if (contactType != null && contactValue != null)
+                r.setContact(ContactType.valueOf(contactType), contactValue);
+            String sectionType = rs.getString("sec_type");
+            if (sectionType != null) {
+                SectionType st = SectionType.valueOf(sectionType);
+                switch (st) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        String value = rs.getString("texts_value");
+                        if (!r.getSections().containsKey(st) && value != null)
+                            r.setSection(st, new TextSection(value));
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        value = rs.getString("texts_value");
+                        if (!r.getSections().containsKey(st))
+                            r.setSection(st, new ListSection());
+                        List<String> textList = ((ListSection) r.getSection(st)).getItems();
+                        if (!textList.contains(value)) textList.add(value);
+                        break;
+                    case EDUCATION:
+                    case EXPERIENCE:
+                        String orgTitle = rs.getString("org_title");
+                        String orgUrl = rs.getString("org_url");
+//                                    orgUrl = orgUrl == null ? "" : orgUrl;
+                        if (orgTitle != null) {
+                            if (!r.getSections().containsKey(st)) {
+                                r.setSection(st, new OrganizationSection());
+                            }
+                            List<Organization> orgList = ((OrganizationSection) r
+                                    .getSection(st)).getOrganizations();
+                            Organization org = orgList.stream()
+                                    .filter(o -> o.getHomePage().getName().equals(orgTitle))
+                                    .findFirst().orElseGet(() -> {
+                                        Organization newOrg =  new Organization(orgTitle, orgUrl);
+                                        orgList.add(newOrg);
+                                        return newOrg;
+                                    });
+                            String startDate = rs.getString("start_date");
+                            String endDate = rs.getString("end_date");
+                            String posTitle = rs.getString("pos_title");
+                            String posDescr = rs.getString("pos_description");
+                            if (startDate != null && endDate != null
+                                    && posTitle != null && posDescr != null) {
+                                List<Organization.Position> posList = org.getPositions();
+                                if (posList.stream().noneMatch(p ->
+                                        p.getStartDate() == DateUtil.parse(startDate) &&
+                                                p.getEndDate() == DateUtil.parse(endDate) &&
+                                                p.getTitle().equals(posTitle) &&
+                                                p.getDescription().equals(posDescr))) {
+                                    org.addPosition(startDate, endDate, posTitle, posDescr);
+                                }
+                            }
+                        }
+                }
+            }
+        }
+        return resumeMap.values().stream().map(Resume::sort).sorted().collect(Collectors.toList());
+    }
+
 }

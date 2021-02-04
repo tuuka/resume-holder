@@ -14,8 +14,6 @@ public class DateUtil {
     private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("MM/yyyy");
 
-//    public static LocalDate of
-
     public static LocalDate of(int year, Month month) {
         return LocalDate.of(year, month, 1);
     }
@@ -26,6 +24,7 @@ public class DateUtil {
     }
 
     public static LocalDate parse(String date) {
+        if (date == null || date.equals("")) date = format(NOW);
         YearMonth yearMonth = YearMonth.parse(date, DATE_FORMATTER);
         return LocalDate.of(yearMonth.getYear(),
                 yearMonth.getMonth(), 1);

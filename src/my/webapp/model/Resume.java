@@ -163,8 +163,9 @@ public class Resume implements Comparable<Resume>, Serializable {
                         r.setSection(st, generateOrgSection(random, faker, st));
                         break;
                 }
-            resumeList.add(r);
+            resumeList.add(r.sort());
         }
+        Collections.sort(resumeList);
         return resumeList;
     }
 
@@ -172,17 +173,17 @@ public class Resume implements Comparable<Resume>, Serializable {
         List<Organization> lo;
         List<Organization.Position> lp;
         lo = new ArrayList<>();
-        for (int o = 0; o < 1+random.nextInt(5); o++){
-            LocalDate ld  = LocalDate.ofYearDay(1990+random.nextInt(20), random.nextInt(364)+1);
+        long currentDay  = LocalDate.ofYearDay(1990+random.nextInt(20),
+                random.nextInt(364)+1).toEpochDay();
+        for (int o = 0; o < 1+random.nextInt(4); o++){
             lp = new ArrayList<>();
             for (int p = 0; p < 1+random.nextInt(3); p++)
                 lp.add(new Organization.Position(
-                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o)*120),
-                        LocalDate.ofEpochDay(ld.toEpochDay()+(p+o+1)*120),
+                        LocalDate.ofEpochDay(currentDay),
+                        LocalDate.ofEpochDay(currentDay += 120),
                         sectionType.equals(SectionType.EDUCATION)
                         ? "Student" : faker.job().position(),
                         faker.job().title()));
-
             lo.add(new Organization(
                     new Link(sectionType.equals(SectionType.EDUCATION)
                             ? faker.university().name()
