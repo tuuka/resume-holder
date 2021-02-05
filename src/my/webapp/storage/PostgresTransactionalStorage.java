@@ -19,6 +19,16 @@ import java.util.stream.Collectors;
 public class PostgresTransactionalStorage implements Storage {
 
     protected final SQLHelper helper;
+    protected final String getAllQuery =
+        "SELECT R.uuid, R.full_name, c.cont_type,\n" +
+        "   c.cont_value, s.sec_type, t.texts_value,\n" +
+        "   org_title, o.org_url, p.start_date, p.end_date,\n" +
+        "   p.pos_title, p.pos_description FROM resume R\n" +
+        "LEFT JOIN contact c on R.uuid = c.resume_uuid\n" +
+        "LEFT JOIN section s on R.uuid = s.resume_uuid\n" +
+        "LEFT JOIN texts t on s.sec_id = t.section_id\n" +
+        "LEFT JOIN organization o on s.sec_id = o.section_id\n" +
+        "LEFT JOIN position p on o.org_id = p.organization_id";
 
     public PostgresTransactionalStorage() {
         this(Config.get().getDBUrl(),
@@ -41,7 +51,7 @@ public class PostgresTransactionalStorage implements Storage {
     @Override
     public void save(Resume resume) {
         LOGGER.info("Saving resume with Uuid=" + resume.getUuid());
-        // sorting to maintain identity when deserializing (for tests)
+        // sorting to maintain identity when deserializing
         resume.sort();
 
         helper.transactionalExecute(conn -> {
@@ -54,19 +64,20 @@ public class PostgresTransactionalStorage implements Storage {
                     }
             );
 
-            helper.executeConnected(conn,
-                    "INSERT INTO contact (cont_type, cont_value, resume_uuid) " +
-                            "VALUES (?, ?, ?)",
-                    ps -> {
-                        for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
-                            ps.setString(1, entry.getKey().toString());
-                            ps.setString(2, entry.getValue());
-                            ps.setString(3, resume.getUuid());
-                            ps.addBatch();
+            if (resume.getContacts().size() > 0)
+                helper.executeConnected(conn,
+                        "INSERT INTO contact (cont_type, cont_value, resume_uuid) " +
+                                "VALUES (?, ?, ?)",
+                        ps -> {
+                            for (Map.Entry<ContactType, String> entry : resume.getContacts().entrySet()) {
+                                ps.setString(1, entry.getKey().toString());
+                                ps.setString(2, entry.getValue());
+                                ps.setString(3, resume.getUuid());
+                                ps.addBatch();
+                            }
+                            return ps.executeBatch();
                         }
-                        return ps.executeBatch();
-                    }
-            );
+                );
 
             for (Map.Entry<SectionType, Section> entry : resume.getSections().entrySet()) {
                 SectionType sectionType = entry.getKey();
@@ -160,101 +171,116 @@ public class PostgresTransactionalStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        return helper.transactionalExecute(conn -> {
-            String fullName = helper.executeConnected(conn,
-                    "SELECT full_name FROM resume WHERE resume.uuid=?",
-                    ps -> {
-                        ps.setString(1, uuid);
-                        ResultSet rs = ps.executeQuery();
-                        if (!rs.next()) throw new SQLException(
-                                "Can't find resume uuid=" + uuid);
-                        return rs.getString("full_name");
-                    }
-            );
-            Resume r = new Resume(uuid, fullName);
-
-            helper.executeConnected(conn,
-                    "SELECT cont_type, cont_value " +
-                            "FROM resume " +
-                            "JOIN contact c ON resume.uuid = c.resume_uuid " +
-                            "WHERE resume.uuid=?",
-                    ps -> {
-                        ps.setString(1, uuid);
-                        ResultSet rs = ps.executeQuery();
-                        while (rs.next())
-                            r.setContact(ContactType.valueOf(rs.getString("cont_type")),
-                                    rs.getString("cont_value"));
-                        return null;
-                    }
-            );
-
-            helper.executeConnected(conn,
-                    "SELECT sec_type ,texts_value, org_title, org_url " +
-                            ",pos_title, pos_description,start_date, end_date " +
-                            "FROM resume " +
-                            "JOIN section on resume.uuid = section.resume_uuid " +
-                            "LEFT JOIN organization on section.sec_id = organization.section_id " +
-                            "LEFT JOIN position on organization.org_id = position.organization_id " +
-                            "LEFT JOIN texts on section.sec_id = texts.section_id " +
-                            "WHERE resume.uuid=?",
-                    ps -> {
-                        ps.setString(1, uuid);
-                        ResultSet rs = ps.executeQuery();
-                        while (rs.next()) {
-                            SectionType sec_type = SectionType.valueOf(
-                                    rs.getString("sec_type"));
-                            switch (sec_type) {
-                                case PERSONAL:
-                                case OBJECTIVE:
-                                    r.setSection(sec_type,
-                                            new TextSection(rs.getString("texts_value")));
-                                    break;
-                                case ACHIEVEMENT:
-                                case QUALIFICATIONS:
-                                    ListSection list_sec = Optional.ofNullable(
-                                            (ListSection) r.getSection(sec_type))
-                                            .orElseGet(() -> {
-                                                ListSection ls = new ListSection(new ArrayList<>());
-                                                r.setSection(sec_type, ls);
-                                                return ls;
-                                            });
-                                    list_sec.addItem(rs.getString("texts_value"));
-                                    break;
-                                case EXPERIENCE:
-                                case EDUCATION:
-                                    OrganizationSection org_sec = Optional.ofNullable(
-                                            (OrganizationSection) r.getSection(sec_type))
-                                            .orElseGet(() -> {
-                                                OrganizationSection os = new OrganizationSection(new ArrayList<>());
-                                                r.setSection(sec_type, os);
-                                                return os;
-                                            });
-                                    String org_title = rs.getString("org_title");
-                                    String org_url = rs.getString("org_url");
-                                    Organization organization = org_sec.getOrganizations()
-                                            .stream()
-                                            .filter(o ->
-                                                    o.getHomePage().getName().equals(org_title) &&
-                                                            o.getHomePage().getUrl().equals(org_url))
-                                            .findFirst()
-                                            .orElseGet(() -> {
-                                                Organization o = new Organization(org_title, org_url);
-                                                org_sec.addOrganization(o);
-                                                return o;
-                                            });
-                                    organization.addPosition(
-                                            rs.getString("start_date"),
-                                            rs.getString("end_date"),
-                                            rs.getString("pos_title"),
-                                            rs.getString("pos_description"));
-                            }
-                        }
-                        return null;
-                    });
-            r.sort();
-            return r;
-        });
+        return helper.connectAndExecute(
+                getAllQuery + "\nWHERE uuid=?",
+                ps -> {
+                    ps.setString(1, uuid);
+                    List<Resume> result = getResumesFromResultSet(ps.executeQuery());
+                    if (result.size() == 0) throw new SQLException(
+                            "Can't find resume uuid=" + uuid);
+                    return result.get(0);
+                }
+        );
     }
+
+//    @Override
+//    public Resume get(String uuid) {
+//        return helper.transactionalExecute(conn -> {
+//            String fullName = helper.executeConnected(conn,
+//                    "SELECT full_name FROM resume WHERE resume.uuid=?",
+//                    ps -> {
+//                        ps.setString(1, uuid);
+//                        ResultSet rs = ps.executeQuery();
+//                        if (!rs.next()) throw new SQLException(
+//                                "Can't find resume uuid=" + uuid);
+//                        return rs.getString("full_name");
+//                    }
+//            );
+//            Resume r = new Resume(uuid, fullName);
+//
+//            helper.executeConnected(conn,
+//                    "SELECT cont_type, cont_value " +
+//                            "FROM resume " +
+//                            "JOIN contact c ON resume.uuid = c.resume_uuid " +
+//                            "WHERE resume.uuid=?",
+//                    ps -> {
+//                        ps.setString(1, uuid);
+//                        ResultSet rs = ps.executeQuery();
+//                        while (rs.next())
+//                            r.setContact(ContactType.valueOf(rs.getString("cont_type")),
+//                                    rs.getString("cont_value"));
+//                        return null;
+//                    }
+//            );
+//
+//            helper.executeConnected(conn,
+//                    "SELECT sec_type ,texts_value, org_title, org_url " +
+//                            ",pos_title, pos_description,start_date, end_date " +
+//                            "FROM resume " +
+//                            "JOIN section on resume.uuid = section.resume_uuid " +
+//                            "LEFT JOIN organization on section.sec_id = organization.section_id " +
+//                            "LEFT JOIN position on organization.org_id = position.organization_id " +
+//                            "LEFT JOIN texts on section.sec_id = texts.section_id " +
+//                            "WHERE resume.uuid=?",
+//                    ps -> {
+//                        ps.setString(1, uuid);
+//                        ResultSet rs = ps.executeQuery();
+//                        while (rs.next()) {
+//                            SectionType sec_type = SectionType.valueOf(
+//                                    rs.getString("sec_type"));
+//                            switch (sec_type) {
+//                                case PERSONAL:
+//                                case OBJECTIVE:
+//                                    r.setSection(sec_type,
+//                                            new TextSection(rs.getString("texts_value")));
+//                                    break;
+//                                case ACHIEVEMENT:
+//                                case QUALIFICATIONS:
+//                                    ListSection list_sec = Optional.ofNullable(
+//                                            (ListSection) r.getSection(sec_type))
+//                                            .orElseGet(() -> {
+//                                                ListSection ls = new ListSection(new ArrayList<>());
+//                                                r.setSection(sec_type, ls);
+//                                                return ls;
+//                                            });
+//                                    list_sec.addItem(rs.getString("texts_value"));
+//                                    break;
+//                                case EXPERIENCE:
+//                                case EDUCATION:
+//                                    OrganizationSection org_sec = Optional.ofNullable(
+//                                            (OrganizationSection) r.getSection(sec_type))
+//                                            .orElseGet(() -> {
+//                                                OrganizationSection os = new OrganizationSection(new ArrayList<>());
+//                                                r.setSection(sec_type, os);
+//                                                return os;
+//                                            });
+//                                    String org_title = rs.getString("org_title");
+//                                    String org_url = rs.getString("org_url");
+//                                    Organization organization = org_sec.getOrganizations()
+//                                            .stream()
+//                                            .filter(o ->
+//                                                    o.getHomePage().getName().equals(org_title) &&
+//                                                            o.getHomePage().getUrl().equals(org_url))
+//                                            .findFirst()
+//                                            .orElseGet(() -> {
+//                                                Organization o = new Organization(org_title, org_url);
+//                                                org_sec.addOrganization(o);
+//                                                return o;
+//                                            });
+//
+//                                    organization.addPosition(
+//                                            rs.getString("start_date"),
+//                                            rs.getString("end_date"),
+//                                            rs.getString("pos_title"),
+//                                            rs.getString("pos_description"));
+//                            }
+//                        }
+//                        return null;
+//                    });
+//            r.sort();
+//            return r;
+//        });
+//    }
 
     @Override
     public void delete(String uuid) {
@@ -286,32 +312,10 @@ public class PostgresTransactionalStorage implements Storage {
                 PreparedStatement::execute);
     }
 
-//    @Override
-//    public List<Resume> getAllSorted() {
-//        return helper.connectAndExecute("SELECT uuid FROM resume",
-//                statement -> {
-//                    ResultSet rs = statement.executeQuery();
-//                    List<Resume> resumes = new ArrayList<>();
-//                    while (rs.next()) {
-//                        resumes.add(get(rs.getString("uuid")));
-//                    }
-//                    Collections.sort(resumes);
-//                    return resumes;
-//                });
-//    }
-
     @Override
     public List<Resume> getAllSorted() {
         return helper.connectAndExecute(
-                "SELECT R.uuid, R.full_name, c.cont_type,\n" +
-                        "       c.cont_value, s.sec_type, t.texts_value,\n" +
-                        "       org_title, o.org_url, p.start_date, p.end_date,\n" +
-                        "       p.pos_title, p.pos_description FROM resume R\n" +
-                        "JOIN contact c on R.uuid = c.resume_uuid\n" +
-                        "JOIN section s on R.uuid = s.resume_uuid\n" +
-                        "LEFT JOIN texts t on s.sec_id = t.section_id\n" +
-                        "LEFT JOIN organization o on s.sec_id = o.section_id\n" +
-                        "LEFT JOIN position p on o.org_id = p.organization_id",
+                getAllQuery,
                 statement -> getResumesFromResultSet(statement.executeQuery())
         );
     }

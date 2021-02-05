@@ -1,0 +1,28 @@
+<component name="libraryTable">
+  <library name="jaxb">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/javax.activation-api-1.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-api-2.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/istack-commons-runtime-4.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-core-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-runtime-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/txw2-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-core-2.3.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-impl-2.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/javax.activation-api-1.2.0-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-api-2.3.1-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-core-2.3.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-api-2.3.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/istack-commons-runtime-4.0.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-core-3.0.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-runtime-3.0.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/txw2-3.0.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-core-2.3.0.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jaxb/jaxb-impl-2.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

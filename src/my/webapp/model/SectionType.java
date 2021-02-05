@@ -1,37 +1,37 @@
 package my.webapp.model;
 
 public enum SectionType {
-    OBJECTIVE("OBJECTIVE") {
+    OBJECTIVE("Objective") {
         @Override
         public Section getEmptySection(){
             return TextSection.EMPTY;
         }
     },
-    PERSONAL("PERSONAL") {
+    PERSONAL("Personal") {
         @Override
         public Section getEmptySection(){
             return TextSection.EMPTY;
         }
     },
-    QUALIFICATIONS("QUALIFICATIONS") {
+    QUALIFICATIONS("Qualifications") {
         @Override
         public Section getEmptySection(){
             return ListSection.EMPTY;
         }
     },
-    ACHIEVEMENT("ACHIEVEMENT") {
+    ACHIEVEMENT("Achievement") {
         @Override
         public Section getEmptySection(){
             return ListSection.EMPTY;
         }
     },
-    EXPERIENCE("EXPERIENCE") {
+    EXPERIENCE("Experience") {
         @Override
         public Section getEmptySection(){
             return OrganizationSection.EMPTY;
         }
     },
-    EDUCATION("EDUCATION") {
+    EDUCATION("Education") {
         @Override
         public Section getEmptySection(){
             return OrganizationSection.EMPTY;

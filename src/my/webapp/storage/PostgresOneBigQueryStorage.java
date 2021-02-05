@@ -242,28 +242,4 @@ public class PostgresOneBigQueryStorage extends PostgresTransactionalStorage {
                     return rs;
                 });
     }
-
-
-    @Override
-    public Resume get(String uuid) {
-        return helper.connectAndExecute(
-                "SELECT R.uuid, R.full_name, c.cont_type,\n" +
-                        "       c.cont_value, s.sec_type, t.texts_value,\n" +
-                        "       org_title, o.org_url, p.start_date, p.end_date,\n" +
-                        "       p.pos_title, p.pos_description FROM resume R\n" +
-                        "JOIN contact c on R.uuid = c.resume_uuid\n" +
-                        "JOIN section s on R.uuid = s.resume_uuid\n" +
-                        "LEFT JOIN texts t on s.sec_id = t.section_id\n" +
-                        "LEFT JOIN organization o on s.sec_id = o.section_id\n" +
-                        "LEFT JOIN position p on o.org_id = p.organization_id\n" +
-                        "WHERE uuid=?",
-                ps -> {
-                    ps.setString(1, uuid);
-                    List<Resume> result = getResumesFromResultSet(ps.executeQuery());
-                    if (result.size() == 0) throw new SQLException(
-                            "Can't find resume uuid=" + uuid);
-                    return result.get(0);
-                }
-        );
-    }
 }

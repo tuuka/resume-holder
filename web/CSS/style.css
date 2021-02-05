@@ -68,7 +68,7 @@ a {
     padding: 1em;
     max-width: 991px;
     margin: 2em auto 0 auto;
-    font-size: 1.2em;
+    /*font-size: 1.2em;*/
 }
 
 .disabled {
@@ -81,7 +81,6 @@ a {
     width: 100%;
     height: 1.7em;
     align-items: center;
-    padding: 0 0.2em;
 }
 
 .resume-list__item:first-child {
@@ -96,59 +95,56 @@ a {
     background-color: #DDDDDD;
 }
 
-.resume-list__item.title {
+.resume-list__item.resume-list_column-title {
     background-color: #222222 !important;
     color: white !important;
 }
 
 .resume-list_column-title {
     text-align: center !important;
+    text-transform: capitalize;
 }
 
 .resume-list__content {
     display: flex;
     width: 90%;
+    /*font-size: 0.8em;*/
 }
 
 .resume-list__item:not(:first-child) {
     font-family: monospace;
 }
 
-.resume-list__item_name {
-    width: 40%;
-    padding: 0 1em;
-}
-
-.resume-list__item_uuid {
-    display: block;
+.resume-list__content div {
     position: relative;
-    width: 60%;
     padding: 0 1em;
+    white-space: nowrap;
 }
 
-.resume-list__item_uuid:before{
+.resume-list__content div:after{
     position: absolute;
     content: "";
-    top: 0;
-    left: 0;
-    width: 2px;
-    height: 100%;
-    background-color: white;
-}
-
-.resume-list__item_uuid:after{
-    position: absolute;
-    content: "";
-    top: 0;
+    top: -5px;
     right: 0;
     width: 2px;
-    height: 100%;
+    height: calc(100% + 10px);
     background-color: white;
 }
 
-.resume-list__item_actions {
+.resume-list__item-name {
+    width: 25%;
+}
+
+.resume-list__item-mail {
+    width: 35%;
+}
+
+.resume-list__item-obj {
+    width: 40%;
+}
+
+.resume-list__item-actions {
     width: 10%;
-    padding: 0 1em;
     text-align: center;
 }
 
@@ -156,7 +152,7 @@ a {
 /*    margin: 0 0.1em;*/
 /*}*/
 
-.resume-list__item_actions img {
+.resume-list__item-actions img {
     width: 1em;
     height: 1em;
 }
@@ -229,6 +225,7 @@ a {
 .resume-edit__input {
     border-style: unset;
     border-bottom-style: ridge;
+    font-family: inherit;
     /*font-weight: 400;*/
 }
 

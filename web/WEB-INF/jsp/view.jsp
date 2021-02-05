@@ -25,7 +25,6 @@
             <c:forEach var="contactEntry" items="${resume.contacts}">
                 <jsp:useBean id="contactEntry"
                              type="java.util.Map.Entry<my.webapp.model.ContactType, java.lang.String>"/>
-                <%--                <p>${contactEntry.key.toHtml(contactEntry.value)}</p>--%>
                 <p><%=contactEntry.getKey().toHtml(contactEntry.getValue())%>
                 </p>
             </c:forEach>

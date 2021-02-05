@@ -3,6 +3,7 @@ package my.webapp.web;
 import my.webapp.model.*;
 import my.webapp.storage.Storage;
 import my.webapp.util.DateUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,7 +25,9 @@ public class ResumeServlet extends HttpServlet {
         storage = my.webapp.Config.get().getStorage();
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(@NotNull HttpServletRequest request,
+                          @NotNull HttpServletResponse response)
+            throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 //        response.setHeader("Content-Type", "text/html; charset=UTF-8");
@@ -58,7 +61,7 @@ public class ResumeServlet extends HttpServlet {
 
         for (SectionType st : SectionType.values()){
             String[] values = request.getParameterValues(st.toString());
-            if (values == null || values.length == 0) {
+            if (values == null || values.length == 0 || values[0].equals("")) {
                 r.getSections().remove(st);
                 continue;
             }
@@ -81,13 +84,16 @@ public class ResumeServlet extends HttpServlet {
                         String[] posDescr = request.getParameterValues(st + "_" + i + "_posdescr");
                         String[] posStartDateStr = request.getParameterValues(st + "_" + i + "_posstart");
                         String[] posEndDateStr = request.getParameterValues(st + "_" + i + "_posend");
-                        for(int j = 0; j < posTitle.length; j++){
-                            if (posTitle[j].equals("") || posStartDateStr[j].equals("")) continue;
-                            positions.add(new Organization.Position(
-                                    posStartDateStr[j],
-                                    (posEndDateStr[j].equals("") ? DateUtil.format(DateUtil.NOW) : posEndDateStr[j]),
-                                    posTitle[j],
-                                    posDescr[j]));
+                        if (posTitle != null && posDescr != null &&
+                                posStartDateStr != null && posEndDateStr != null) {
+                            for (int j = 0; j < posTitle.length; j++) {
+                                if (posTitle[j].equals("") || posStartDateStr[j].equals("")) continue;
+                                positions.add(new Organization.Position(
+                                        posStartDateStr[j],
+                                        (posEndDateStr[j].equals("") ? DateUtil.format(DateUtil.NOW) : posEndDateStr[j]),
+                                        posTitle[j],
+                                        posDescr[j]));
+                            }
                         }
                         orgs.add(new Organization(new Link(values[i], orgUrls[i]), positions));
                     }
@@ -101,7 +107,9 @@ public class ResumeServlet extends HttpServlet {
                 request.getContextPath(), r.getUuid()));
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(@NotNull HttpServletRequest request,
+                         @NotNull HttpServletResponse response)
+            throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 //        response.setHeader("Content-Type", "text/html; charset=UTF-8");

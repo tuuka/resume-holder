@@ -60,7 +60,7 @@
                         resume.getSection(sectionType) }"/>
                     <jsp:useBean id="section" type="my.webapp.model.Section"/>
                     <li class="resume-edit__sections-item">
-                        <div class="resume-edit__section_title">
+                        <div class="resume-edit__section_title" data-section-type="${sectionType}">
                             <span class="resume-edit__add-icon ${
                                 (sectionType=='OBJECTIVE' ||
                                  sectionType=='PERSONAL') ? "hidden" : ""}">

@@ -93,7 +93,7 @@ function addElement(target) {
     //check if organization/text-list was chosen to add
     if (parentLi.classList.contains('resume-edit__sections-item')) {
         let sectionTypeName = target.closest('.resume-edit__section_title')
-            .textContent.trim();
+            .dataset.sectionType;
         //check if it was a text-list
         if (parentLi.querySelector('.resume-edit__text-list')){
             addText(parentLi.querySelector('.resume-edit__text-list'),
@@ -106,14 +106,18 @@ function addElement(target) {
     }
     // check if a position in the organization was chosen to add
     if (parentLi.classList.contains('resume-edit__org')) {
-        let closestSectionNameType = target.closest('.resume-edit__org-list')
+        let closestOrgList = target.closest('.resume-edit__org-list');
+        let sectionTypeName = closestOrgList
             .closest('.resume-edit__sections-item')
             .querySelector('.resume-edit__section_title')
-        console.log(closestSectionNameType);
+            .dataset.sectionType;
+        // May be orgIndex should be calculated here to avoid reindexing later
         addPosition(0,
-            closestSectionNameType.textContent.trim(),
+            sectionTypeName,
             parentLi.querySelector('.resume-edit__positions-list'));
+        reindexPosition(closestOrgList);
     }
+
 }
 
 function addText(parent, sectionType) {

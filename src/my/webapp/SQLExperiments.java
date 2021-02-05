@@ -18,10 +18,10 @@ public class SQLExperiments {
 //        Storage ps = new PostgresJsonStorage(Config.get().getDBUrl(),
 //                Config.get().getDBUser(), Config.get().getDBPassword());
         ps.clear();
-        resumes.forEach(ps::save);
-        ps.save(new Resume("xxx", "xxx"));
-        ps.save(new Resume("yyy", "yyy"));
-        ps.save(new Resume("zzz", "zzz"));
+//        resumes.forEach(ps::save);
+//        ps.save(new Resume("xxx", "xxx"));
+//        ps.save(new Resume("yyy", "yyy"));
+//        ps.save(new Resume("zzz", "zzz"));
 //        r1 = ps.get("111");
 //        r1 = ps.get(resumes.get(0).getUuid());
 //        System.out.println(r1);
@@ -39,6 +39,10 @@ public class SQLExperiments {
 //        System.out.println(r2.getSections());
 //        System.out.println(r3.getSections());
 //        ps.get("0987");
+//        Resume resume = new Resume("empty");
+//        ps.save(resume);
+//        System.out.println(ps.get(resume.getUuid()));
+
     }
 
 }
