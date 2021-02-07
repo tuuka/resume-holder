@@ -154,9 +154,7 @@
     </section>
 </main>
 
-<script>
-    let pageContext = "${pageContext.request.contextPath}";
-</script>
-<script src="${pageContext.request.contextPath}/js/script.js"></script>
+
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

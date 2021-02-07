@@ -17,7 +17,7 @@ public class SQLExperiments {
                 Config.get().getDBUser(), Config.get().getDBPassword());
 //        Storage ps = new PostgresJsonStorage(Config.get().getDBUrl(),
 //                Config.get().getDBUser(), Config.get().getDBPassword());
-        ps.clear();
+//        ps.clear();
 //        resumes.forEach(ps::save);
 //        ps.save(new Resume("xxx", "xxx"));
 //        ps.save(new Resume("yyy", "yyy"));
@@ -42,6 +42,7 @@ public class SQLExperiments {
 //        Resume resume = new Resume("empty");
 //        ps.save(resume);
 //        System.out.println(ps.get(resume.getUuid()));
+
 
     }
 

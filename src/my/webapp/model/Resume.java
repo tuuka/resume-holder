@@ -116,6 +116,7 @@ public class Resume implements Comparable<Resume>, Serializable {
     }
 
     public static List<Resume> generateNFakeResumes(int n){
+//        Faker faker = new Faker(new Locale("ru"));
         Faker faker = new Faker();
         Random random = new Random();
         List<Resume> resumeList = new ArrayList<>();
@@ -128,7 +129,7 @@ public class Resume implements Comparable<Resume>, Serializable {
                 switch (ct) {
                     case MOBILE:
                     case PHONE:
-                        r.setContact(ct, "+" + (random.nextInt(8) + 1) + faker.phoneNumber().phoneNumber());
+                        r.setContact(ct, faker.phoneNumber().cellPhone());
                         break;
                     case SKYPE:
                         r.setContact(ct, faker.name().username());

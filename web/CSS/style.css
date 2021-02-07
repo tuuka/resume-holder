@@ -26,11 +26,13 @@ body {
     background-color: #FFFFFF;
 }
 
-a {
+a,a:link,a:visited {
     text-decoration: none;
+    color: #010199;
 }
 
-.hidden {
+.hidden,
+.disabled{
     display: none !important;
 }
 
@@ -57,6 +59,7 @@ a {
 
 .menu .menu__item:hover {
     cursor: pointer;
+    color: blue;
 }
 
 .menu__item.active{
@@ -71,8 +74,30 @@ a {
     /*font-size: 1.2em;*/
 }
 
-.disabled {
-    display: none !important;
+.search-form {
+    margin-bottom: 1em;
+}
+
+.search-form__fieldset {
+    padding: 0.5em;
+}
+
+.resume-search__input {
+    min-width: 10em;
+}
+
+.search-form__buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.5em 0.2em 0.2em 0.2em;
+}
+
+.search-form__item {
+    margin-bottom: 0.5em;
+}
+
+.resume-list__filter-title {
+    display: flex;
 }
 
 .resume-list__item {
@@ -245,13 +270,11 @@ a {
     margin-bottom: 0.5em;
 }
 
-.resume-edit__delete-icon,.resume-edit__add-icon {
+.resume-edit__delete-icon,
+.resume-edit__add-icon {
     margin-right: 0.2em;
     display: inline-flex;
     align-items: center;
-}
-
-.resume-edit__delete-icon,.resume-edit__add-icon {
     cursor: pointer;
 }
 
