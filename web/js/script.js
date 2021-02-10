@@ -1,7 +1,23 @@
-function filter_resume() {
-    let form = document.getElementById('search-form__form');
-    form.submit();
-}
+const selectElementSelector = "select[name='search-type']",
+      resumeEditAddButtonSelector =  ".resume-edit__add-icon",
+      resumeEditDeleteButtonSelector = ".resume-edit__delete-icon",
+      resumeEditInputSelector = ".resume-edit__input",
+      resumeEditOrgListSelector = ".resume-edit__org-list",
+      resumeEditSectionItemSelector = ".resume-edit__sections-item",
+      resumeEditSectionTitle = ".resume-edit__section_title",
+      resumeEditOrgSelector = ".resume-edit__org",
+      resumeEditPositionListSelector = ".resume-edit__positions-list",
+      resumeEditPositionSelector = ".resume-edit__position",
+      resumeEditTextListSelector = ".resume-edit__text-list",
+      resumeEditTextSelector = ".resume-edit__text"
+;
+
+// Sometimes input values in search form that are too long cause errors.
+// Maybe should trim it before submitting.
+// function filter_resume() {
+//     let form = document.getElementById('search-form__form');
+//     form.submit();
+// }
 
 function saveResume(uuid) {
     let form = document.getElementById("edit_form");
@@ -45,65 +61,65 @@ function setInputWidth(inputElement) {
 }
 
 setListenersAndInputWidth(document);
-let firstResumeEditInput = document.querySelector('.resume-edit__input');
+let firstResumeEditInput = document.querySelector(resumeEditInputSelector);
 if (firstResumeEditInput != null) firstResumeEditInput.focus();
 
 function setListenersAndInputWidth(elem) {
-    elem.querySelectorAll('.resume-edit__add-icon')
+    elem.querySelectorAll(resumeEditAddButtonSelector)
         .forEach(item => item
             .addEventListener('click',
                 event => addElement(event.target))
         );
-    elem.querySelectorAll('.resume-edit__delete-icon')
+    elem.querySelectorAll(resumeEditDeleteButtonSelector)
         .forEach(item => item
-            .addEventListener('click',
+            .addEventListener("click",
                 event => deleteElement(event.target))
         );
-    elem.querySelectorAll('input')
+    elem.querySelectorAll("input")
         .forEach(item => {
             setInputWidth(item);
-            item.addEventListener('input',
+            item.addEventListener("input",
                 event => setInputWidth(event.target));
         });
 }
 
 function deleteElement(elem) {
     let parentLi = elem.closest('li');
-    let parentUl = parentLi.closest(".resume-edit__org-list");
+    let parentUl = parentLi.closest(resumeEditOrgListSelector);
     if (parentLi) parentLi.remove();
     if (parentUl) reindexPosition(parentUl);
 }
 
 function addElement(target) {
-    const closestSectionItem = target.closest(".resume-edit__sections-item");
+    const closestSectionItem = target.closest(resumeEditSectionItemSelector);
     const sectionTypeName = closestSectionItem
-        .querySelector(".resume-edit__section_title")
+        .querySelector(resumeEditSectionTitle)
         .dataset.sectionType;
-    const currentOrgList = closestSectionItem.querySelector(".resume-edit__org-list");
-    const closestOrg = target.closest(".resume-edit__org");
+    const currentOrgList = closestSectionItem.querySelector(resumeEditOrgListSelector);
+    const closestOrg = target.closest(resumeEditOrgSelector);
 
     if (closestOrg) { // adding position
-        const allOrgs = currentOrgList.querySelectorAll(".resume-edit__org");
-        insertElementAndSetListeners(closestOrg.querySelector(".resume-edit__positions-list"),
-            "li", "resume-edit__position",
+        const allOrgs = currentOrgList.querySelectorAll(resumeEditOrgSelector);
+        insertElementAndSetListeners(closestOrg.querySelector(resumeEditPositionListSelector),
+            "li", resumeEditPositionSelector.slice(1),
             getNewPositionHtml(sectionTypeName,
                 Array.from(allOrgs).findIndex(item => item.isSameNode(closestOrg))));
     } else {
         if (currentOrgList) { //adding organization
             insertElementAndSetListeners(currentOrgList, "li",
-                "resume-edit__org", getNewOrganizationHtml(sectionTypeName));
+                resumeEditOrgSelector.slice(1), getNewOrganizationHtml(sectionTypeName));
             reindexPosition(currentOrgList);
         } else { //adding text
             insertElementAndSetListeners(closestSectionItem
-                    .querySelector(".resume-edit__text-list"),
-                "li", "resume-edit__text",
+                    .querySelector(resumeEditTextListSelector),
+                "li", resumeEditTextSelector.slice(1),
                 getNewTextHtml(sectionTypeName));
         }
     }
 }
 
 function reindexPosition(orgList) {
-    orgList.querySelectorAll('.resume-edit__org')
+    orgList.querySelectorAll(resumeEditOrgSelector)
         .forEach((orgLI, orgIndex) => {
             orgLI.querySelectorAll('input')
                 .forEach(item => {
@@ -123,7 +139,7 @@ function insertElementAndSetListeners(parent, itemTag, itemClass, itemHtml, last
     newElem.insertAdjacentHTML("afterbegin", itemHtml);
     parent.insertBefore(newElem, last ? parent.lastElementChild : parent.firstChild);
     setListenersAndInputWidth(newElem);
-    newElem.querySelectorAll("select[name='search-type']")
+    newElem.querySelectorAll(selectElementSelector)
         .forEach(item => item.addEventListener("change",
             e => selectChanged(e)))
     return newElem;
@@ -166,7 +182,7 @@ function fillValuesForSelectedType(selectedType, n) {
     let datalist = document.getElementById(`search-form__content-list-${n}`);
     datalist.querySelectorAll("option").forEach(item => item.remove())
     for (const s of searchMapJson[selectedType].sort()) {
-        let opt = document.createElement('option');
+        let opt = document.createElement("option");
         opt.value = s;
         opt.innerHTML = s;
         datalist.appendChild(opt);
@@ -193,13 +209,13 @@ function selectChanged(e) {
 }
 
 function addFilterItem() {
-    const existingSelectElements = document.querySelectorAll("select[name='search-type']");
+    const existingSelectElements = document.querySelectorAll(selectElementSelector);
     const filterIndex = existingSelectElements.length;
     const createdItem = insertElementAndSetListeners(
         document.querySelector('.search-form__fieldset'),
         "div", "search-form__item",
         getSearchFormItemHtml(existingSelectElements.length), document.querySelector(".search-form__buttons"));
-    const typeInputElem = createdItem.querySelector("select[name='search-type']");
+    const typeInputElem = createdItem.querySelector(selectElementSelector);
     fillSelectTypeForFilter(typeInputElem
             , Array.from(existingSelectElements).map(item => item.value)
     );

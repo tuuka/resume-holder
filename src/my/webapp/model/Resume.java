@@ -147,7 +147,8 @@ public class Resume implements Comparable<Resume>, Serializable {
             for (SectionType st : SectionType.values())
                 switch (st){
                     case PERSONAL:
-                        r.setSection(st, new TextSection(faker.chuckNorris().fact()));
+                        r.setSection(st, new TextSection(faker.chuckNorris()
+                                .fact().replaceAll("\"", "'")));
                         break;
                     case OBJECTIVE:
                         r.setSection(st, new TextSection(faker.job().title()));

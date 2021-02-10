@@ -36,7 +36,7 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String editUuid = request.getParameter("edit_uuid");
         String fullName = request.getParameter("full_name");
-        Map<String, String[]> m = request.getParameterMap();
+//        Map<String, String[]> m = request.getParameterMap();
 
         Resume r;
         //check if 'add resume' or 'save copied resume' was chosen
@@ -123,20 +123,18 @@ public class ResumeServlet extends HttpServlet {
             String[] searchTypes = request.getParameterValues("search-type");
             String[] searchContents = request.getParameterValues("search-content");
             List<Resume> resumes = storage.getAllSorted();
-            Map<String, String> searchFiltersMap = new HashMap<>();
 
+            // create filtered resumes
+            Map<String, String> searchFiltersMap = new HashMap<>();
             if (searchTypes != null && searchContents != null) {
                 resumes = resumes.stream().filter(resume -> {
                     int i = 0;
                     for (String s : searchTypes) {
                         // check if searchType is contact
+                        if (s.equals("fullname") && resume.getFullName().contains(searchContents[i])) return true;
                         ContactType ct = Arrays.stream(ContactType.values())
                                 .filter(item -> item.getTitle().equalsIgnoreCase(s)).findFirst().orElse(null);
-                        if (ct != null) {
-                            if (resume.getContact(ct).contains(searchContents[i])){
-                                return true;
-                            }
-                        }
+                        if (ct != null && resume.getContact(ct).contains(searchContents[i])) return true;
                         //check if searchType is section
                         SectionType st = Arrays.stream(SectionType.values())
                                 .filter(item -> item.getTitle().equalsIgnoreCase(s))
@@ -177,8 +175,11 @@ public class ResumeServlet extends HttpServlet {
                         .collect(Collectors.toMap(i -> searchTypes[i], i -> searchContents[i]));
             }
             request.setAttribute("searchFiltersMap", searchFiltersMap);
-            // create Map for filter resumes
+
+            // create Map for filter resumes (may be should place it in else block above
+            // to generate searchMap only for full resume list)
             Map<String, List<String>> searchMap = new HashMap<>();
+            searchMap.put("fullname", new ArrayList<>());
             for (ContactType ct : ContactType.values()) {
                 searchMap.put(ct.getTitle(), new ArrayList<>(Collections.emptyList()));
             }
@@ -186,6 +187,7 @@ public class ResumeServlet extends HttpServlet {
                 searchMap.put(st.getTitle(), new ArrayList<>(Collections.emptyList()));
             }
             storage.getAllSorted().forEach(r -> {
+                searchMap.get("fullname").add(r.getFullName());
                 for (Map.Entry<ContactType, String> entry : r.getContacts().entrySet()) {
                     if (!searchMap.get(entry.getKey().getTitle()).contains(entry.getValue()))
                         searchMap.get(entry.getKey().getTitle()).add(entry.getValue());
@@ -194,13 +196,15 @@ public class ResumeServlet extends HttpServlet {
                     switch (entry.getKey()) {
                         case OBJECTIVE:
                         case PERSONAL:
+                            String text = ((TextSection) entry.getValue()).getContent();
                             searchMap.get(entry.getKey().getTitle())
-                                    .add(((TextSection) entry.getValue()).getContent());
+                                    .add(text.length() > 50 ? text.substring(0, 49) : text);
                             break;
                         case QUALIFICATIONS:
                         case ACHIEVEMENT:
                             for (String s : ((ListSection) entry.getValue()).getItems()) {
-                                searchMap.get(entry.getKey().getTitle()).add(s);
+                                searchMap.get(entry.getKey().getTitle())
+                                        .add(s.length() > 50 ? s.substring(0, 49) : s);
                             }
                             break;
                         case EXPERIENCE:
