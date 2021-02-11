@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-//@WebServlet(name="ResumeServlet", urlPatterns = {"/"})
+@WebServlet(name = "ResumeServlet", urlPatterns = {"/resumes"})
 public class ResumeServlet extends HttpServlet {
     private Storage storage;
 
@@ -104,7 +105,7 @@ public class ResumeServlet extends HttpServlet {
         }
         if (isCreate) storage.save(r);
         else storage.update(r);
-        response.sendRedirect(String.format("%s?uuid=%s&action=view",
+        response.sendRedirect(String.format("%s/resumes?uuid=%s&action=view",
                 request.getContextPath(), r.getUuid()));
     }
 
@@ -124,106 +125,25 @@ public class ResumeServlet extends HttpServlet {
             String[] searchContents = request.getParameterValues("search-content");
             List<Resume> resumes = storage.getAllSorted();
 
-            // create filtered resumes
             Map<String, String> searchFiltersMap = new HashMap<>();
+            String searchMapJson = null;
+
+            // create filtered resumes and legend for filtered mode
             if (searchTypes != null && searchContents != null) {
-                resumes = resumes.stream().filter(resume -> {
-                    int i = 0;
-                    for (String s : searchTypes) {
-                        // check if searchType is contact
-                        if (s.equals("fullname") && resume.getFullName().contains(searchContents[i])) return true;
-                        ContactType ct = Arrays.stream(ContactType.values())
-                                .filter(item -> item.getTitle().equalsIgnoreCase(s)).findFirst().orElse(null);
-                        if (ct != null && resume.getContact(ct).contains(searchContents[i])) return true;
-                        //check if searchType is section
-                        SectionType st = Arrays.stream(SectionType.values())
-                                .filter(item -> item.getTitle().equalsIgnoreCase(s))
-                                .findFirst().orElse(null);
-                        if (st != null) {
-                            switch (st){
-                                case PERSONAL:
-                                case OBJECTIVE:
-                                    if (((TextSection)resume.getSection(st)).getContent().contains(searchContents[i])) {
-                                        return true;
-                                    }
-                                    break;
-                                case ACHIEVEMENT:
-                                case QUALIFICATIONS:
-                                    int finalI = i;
-                                    if (((ListSection)resume.getSection(st)).getItems()
-                                            .stream().anyMatch(item -> item.contains(searchContents[finalI]))){
-                                        return true;
-                                    }
-                                    break;
-                                case EDUCATION:
-                                case EXPERIENCE:
-                                    int finalI1 = i;
-                                    if (((OrganizationSection)resume.getSection(st))
-                                            .getOrganizations().stream().anyMatch(item ->
-                                                item.getHomePage().getName().contains(searchContents[finalI1]))
-                                            ){
-                                        return true;
-                                    }
-                                    break;
-                            }
-                        }
-                        i++;
-                    }
-                    return false;
-                }).collect(Collectors.toList());
-                searchFiltersMap = IntStream.range(0, searchTypes.length).boxed()
-                        .collect(Collectors.toMap(i -> searchTypes[i], i -> searchContents[i]));
+                resumes = resumes.stream().filter(resume ->
+                        checkFilter(resume, searchTypes, searchContents))
+                        .collect(Collectors.toList());
+                searchFiltersMap =
+                        IntStream.range(0, searchTypes.length).boxed().collect(
+                                Collectors.toMap(i -> searchTypes[i], i -> searchContents[i])
+                        );
+            } else { //create Json-map to fill 'select' and 'input' fields to filter resumes
+                ObjectMapper om = new ObjectMapper();
+                searchMapJson = om.writeValueAsString(getSearchMapForFilters(resumes));
             }
+
             request.setAttribute("searchFiltersMap", searchFiltersMap);
-
-            // create Map for filter resumes (may be should place it in else block above
-            // to generate searchMap only for full resume list)
-            Map<String, List<String>> searchMap = new HashMap<>();
-            searchMap.put("fullname", new ArrayList<>());
-            for (ContactType ct : ContactType.values()) {
-                searchMap.put(ct.getTitle(), new ArrayList<>(Collections.emptyList()));
-            }
-            for (SectionType st : SectionType.values()) {
-                searchMap.put(st.getTitle(), new ArrayList<>(Collections.emptyList()));
-            }
-            storage.getAllSorted().forEach(r -> {
-                searchMap.get("fullname").add(r.getFullName());
-                for (Map.Entry<ContactType, String> entry : r.getContacts().entrySet()) {
-                    if (!searchMap.get(entry.getKey().getTitle()).contains(entry.getValue()))
-                        searchMap.get(entry.getKey().getTitle()).add(entry.getValue());
-                }
-                for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
-                    switch (entry.getKey()) {
-                        case OBJECTIVE:
-                        case PERSONAL:
-                            String text = ((TextSection) entry.getValue()).getContent();
-                            searchMap.get(entry.getKey().getTitle())
-                                    .add(text.length() > 50 ? text.substring(0, 49) : text);
-                            break;
-                        case QUALIFICATIONS:
-                        case ACHIEVEMENT:
-                            for (String s : ((ListSection) entry.getValue()).getItems()) {
-                                searchMap.get(entry.getKey().getTitle())
-                                        .add(s.length() > 50 ? s.substring(0, 49) : s);
-                            }
-                            break;
-                        case EXPERIENCE:
-                        case EDUCATION:
-                            for (Organization o : ((OrganizationSection) entry
-                                    .getValue()).getOrganizations()) {
-                                searchMap.get(entry.getKey().getTitle())
-                                        .add(o.getHomePage().getName());
-                            }
-                    }
-                }
-            });
-            searchMap.replaceAll((k, v) -> new ArrayList<>(new TreeSet<>(v)));
-            ObjectMapper om = new ObjectMapper();
-            String searchMapJson = om.writeValueAsString(searchMap);
-
             request.setAttribute("searchMapJson", searchMapJson);
-
-
             request.setAttribute("resumes", resumes);
             request.getRequestDispatcher("/WEB-INF/jsp/list.jsp").forward(request, response);
             return;
@@ -237,14 +157,14 @@ public class ResumeServlet extends HttpServlet {
                 break;
             case "delete":
                 storage.delete(uuid);
-                response.sendRedirect(request.getContextPath() + "");
+                response.sendRedirect(request.getContextPath() + "/resumes");
                 return;
             case "add":
                 r = new Resume("Empty");
                 break;
             case "generate":
                 storage.save(Resume.generateNFakeResumes(1).get(0));
-                response.sendRedirect(request.getContextPath() + "");
+                response.sendRedirect(request.getContextPath() + "/resumes");
                 return;
             default:
                 throw new IllegalArgumentException("Action " + action + " is illegal!");
@@ -256,4 +176,91 @@ public class ResumeServlet extends HttpServlet {
         ).forward(request, response);
 
     }
+
+    private boolean checkFilter(Resume resume, String[] searchTypes, String[] searchContents) {
+        int i = 0;
+        for (String s : searchTypes) {
+            // check if searchType is contact
+            if (s.equals("fullname") && resume.getFullName().contains(searchContents[i])) return true;
+            ContactType ct = Arrays.stream(ContactType.values())
+                    .filter(item -> item.getTitle().equalsIgnoreCase(s)).findFirst().orElse(null);
+            if (ct != null && resume.getContact(ct).contains(searchContents[i])) return true;
+            //check if searchType is section
+            SectionType st = Arrays.stream(SectionType.values())
+                    .filter(item -> item.getTitle().equalsIgnoreCase(s))
+                    .findFirst().orElse(null);
+            if (st != null) {
+                switch (st) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        if (((TextSection) resume.getSection(st)).getContent().contains(searchContents[i])
+                        ) return true;
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        int j = i;
+                        if (((ListSection) resume.getSection(st)).getItems()
+                                .stream().anyMatch(item -> item.contains(searchContents[j]))
+                        ) return true;
+                        break;
+                    case EDUCATION:
+                    case EXPERIENCE:
+                        int k = i;
+                        if (((OrganizationSection) resume.getSection(st))
+                                .getOrganizations().stream().anyMatch(item ->
+                                        item.getHomePage().getName().contains(searchContents[k]))
+                        ) return true;
+                        break;
+                }
+            }
+            i++;
+        }
+        return false;
+    }
+
+    Map<String, List<String>> getSearchMapForFilters(List<Resume> resumes) {
+        Map<String, List<String>> searchMap = new HashMap<>();
+        searchMap.put("fullname", new ArrayList<>());
+        for (ContactType ct : ContactType.values()) {
+            searchMap.put(ct.getTitle(), new ArrayList<>(Collections.emptyList()));
+        }
+        for (SectionType st : SectionType.values()) {
+            searchMap.put(st.getTitle(), new ArrayList<>(Collections.emptyList()));
+        }
+        resumes.forEach(r -> {
+            searchMap.get("fullname").add(r.getFullName());
+            for (Map.Entry<ContactType, String> entry : r.getContacts().entrySet()) {
+                if (!searchMap.get(entry.getKey().getTitle()).contains(entry.getValue()))
+                    searchMap.get(entry.getKey().getTitle()).add(entry.getValue());
+            }
+            for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
+                switch (entry.getKey()) {
+                    case OBJECTIVE:
+                    case PERSONAL:
+                        String text = ((TextSection) entry.getValue()).getContent();
+                        searchMap.get(entry.getKey().getTitle())
+                                .add(text.length() > 50 ? text.substring(0, 49) : text);
+                        break;
+                    case QUALIFICATIONS:
+                    case ACHIEVEMENT:
+                        for (String s : ((ListSection) entry.getValue()).getItems()) {
+                            searchMap.get(entry.getKey().getTitle())
+                                    .add(s.length() > 50 ? s.substring(0, 49) : s);
+                        }
+                        break;
+                    case EXPERIENCE:
+                    case EDUCATION:
+                        for (Organization o : ((OrganizationSection) entry
+                                .getValue()).getOrganizations()) {
+                            searchMap.get(entry.getKey().getTitle())
+                                    .add(o.getHomePage().getName());
+                        }
+                }
+            }
+        });
+        searchMap.replaceAll((k, v) -> new ArrayList<>(new TreeSet<>(v)));
+        return searchMap;
+    }
+
+
 }

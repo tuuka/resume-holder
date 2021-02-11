@@ -8,8 +8,8 @@
 
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/style.css">
+<%--    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">--%>
+<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">--%>
     <jsp:useBean id="resume" type="my.webapp.model.Resume" scope="request"/>
     <title>Resume ${resume.fullName}</title>
 </head>
@@ -19,7 +19,7 @@
     <section class="container resume-view">
         <div class="resume-view__name"><span class="title">Full name: </span>${resume.fullName}</div>
         <div class="resume-view__uuid"><span class="title">uuid: </span>${resume.uuid}
-            <a class="resume-button" href="?uuid=${resume.uuid}&action=edit">Edit resume</a>
+            <a class="resume-button" href="${pageContext.request.contextPath}/resumes?uuid=${resume.uuid}&action=edit">Edit resume</a>
         </div>
         <div class="resume-view__contacts">
             <c:forEach var="contactEntry" items="${resume.contacts}">

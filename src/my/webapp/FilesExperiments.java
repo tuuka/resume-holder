@@ -1,10 +1,7 @@
 package my.webapp;
 
 import java.io.*;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 
@@ -23,9 +20,9 @@ public class FilesExperiments {
         }
 
         try {
-            Path path = Path.of("D:/projects/java/javaops/resume_holder");
+            Path path = Paths.get("D:/projects/java/javaops/resume_holder");
             Files.walkFileTree(path,
-                    new FileVisitor<>() {
+                    new FileVisitor<Path>() {
                         @Override
                         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                             if (dir.compareTo(path.resolve(".git")) == 0)
@@ -67,11 +64,11 @@ public class FilesExperiments {
     }
 
     public static void getDirContent(File file, int tab){
-            System.out.println("\t".repeat(tab) + file.getAbsolutePath());
+            System.out.println(new String(new char[tab]).replace("\0", "\t") + file.getAbsolutePath());
             for (File f : Objects.requireNonNull(file.listFiles())) {
                 if (f.isDirectory()) FilesExperiments.getDirContent(f, tab+1);
                     else {
-                        System.out.println("\t" + "\t".repeat(tab) + f.getName());
+                        System.out.println("\t" + new String(new char[tab]).replace("\0", "\t") + f.getName());
 
                 }
             }

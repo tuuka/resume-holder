@@ -6,8 +6,8 @@
 
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/style.css">
+<%--    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">--%>
+<%--    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">--%>
     <jsp:useBean id="resume" type="my.webapp.model.Resume" scope="request"/>
     <title>Resume ${resume.fullName}</title>
 </head>
@@ -53,7 +53,6 @@
 
             <ul class="resume-edit__sections">
                 <c:forEach var="sectionType" items="<%=SectionType.values()%>">
-<%--                    <jsp:useBean id="sectionType" type="my.webapp.model.SectionType"/>--%>
                     <c:set var="section" value="${
                         resume.getSection(sectionType)==null?
                         sectionType.emptySection :
@@ -139,8 +138,6 @@
                                                         </li>
                                                     </c:forEach>
                                                 </ul>
-
-
                                             </li>
                                         </c:forEach>
                                     </c:if>

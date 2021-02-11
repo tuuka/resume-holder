@@ -63,7 +63,7 @@ public class ArrayStorage extends AbstractStorage<Integer> {
 
     @Override
     protected List<Resume> doGetAll() {
-        return List.of(Arrays.copyOf(storage, size));
+        return Arrays.asList(Arrays.copyOf(storage, size));
     }
 
     @Override

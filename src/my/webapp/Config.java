@@ -14,24 +14,34 @@ public class Config {
     private final String storageDir;
     private final Storage storage;
     private final int arrayCapacity;
-    private final String DBUrl;
-    private final String DBUser;
-    private final String DBPassword;
+    private String DBUrl;
+    private String DBUser;
+    private String DBPassword;
 
-    public static Config get(){return INSTANCE;}
+    public static Config get() {
+        return INSTANCE;
+    }
 
-    private Config(){
+    private Config() {
 //        try(InputStream is = getClass().getClassLoader().getResourceAsStream("resumes.properties")){
 //        try(InputStream is = new FileInputStream("/resources/resumes.properties")){
-            try (InputStream is = Config.class.getResourceAsStream(PROPS_FILE)) {
+        try (InputStream is = Config.class.getResourceAsStream(PROPS_FILE)) {
             Properties properties = new Properties();
             properties.load(is);
             storageDir = properties.getProperty("storage.dir");
             arrayCapacity = Integer
                     .parseInt(properties.getProperty("array_storage.capacity"));
-            DBUrl = properties.getProperty("db.url");
-            DBUser = properties.getProperty("db.user");
-            DBPassword = properties.getProperty("db.password");
+            DBUrl = System.getenv("JDBC_DATABASE_URL");
+            if (DBUrl != null) DBUrl = DBUrl.replace("postgres://", "jdbc:postgresql://");
+            DBUser = System.getenv("JDBC_DATABASE_USERNAME");
+            DBPassword = System.getenv("JDBC_DATABASE_PASSWORD");
+            if (DBUrl == null || DBUrl.length() == 0 ||
+                    DBUser == null || DBUser.length() == 0 ||
+                    DBPassword == null || DBPassword.length() == 0) {
+                DBUrl = properties.getProperty("db.url");
+                DBUser = properties.getProperty("db.user");
+                DBPassword = properties.getProperty("db.password");
+            }
             storage = new PostgresTransactionalStorage(DBUrl, DBUser, DBPassword);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot read properties file!", e);
@@ -58,5 +68,7 @@ public class Config {
         return DBPassword;
     }
 
-    public Storage getStorage() { return storage; }
+    public Storage getStorage() {
+        return storage;
+    }
 }

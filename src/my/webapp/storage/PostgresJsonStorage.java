@@ -132,13 +132,13 @@ public class PostgresJsonStorage implements Storage {
     private Resume getResume(ResultSet rs) throws SQLException {
         Resume r = new Resume(rs.getString("uuid"), rs.getString("full_name"));
         TypeReference<EnumMap<ContactType, String>> contactTypeRef
-                = new TypeReference<>() {
+                = new TypeReference<EnumMap<ContactType, String>>() {
         };
         SQLHelper.convert(om -> om.readValue(
                 rs.getString("contacts"), contactTypeRef))
                 .forEach(r::setContact);
         TypeReference<EnumMap<SectionType, Section>> sectionTypeRef
-                = new TypeReference<>() {
+                = new TypeReference<EnumMap<SectionType, Section>>() {
         };
         SQLHelper.convert(om -> om.readValue(
                 rs.getString("sections"), sectionTypeRef))

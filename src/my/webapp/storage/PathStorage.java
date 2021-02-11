@@ -11,6 +11,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -21,11 +22,11 @@ public class PathStorage extends AbstractStorage<Path> {
     private final ResumeSerializer serializer;
 
     public PathStorage(String directory, ResumeSerializer serializer) {
-        this(Path.of(directory), serializer);
+        this(Paths.get(directory), serializer);
     }
 
     public PathStorage(ResumeSerializer serializer) {
-        this(Path.of(Config.get().getStorageDir()), serializer);
+        this(Paths.get(Config.get().getStorageDir()), serializer);
     }
 
     public PathStorage(Path directory, ResumeSerializer serializer) {
